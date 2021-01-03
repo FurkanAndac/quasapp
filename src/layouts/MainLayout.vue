@@ -8,7 +8,7 @@
           class="text-teal " >
           <q-tab name="vacatures" icon="mail" label="Vacatures" />
           <q-tab name="interview" icon="alarm" label="Interview" />
-          <q-tab name="progress" icon="movie" label="Progress" />
+          <q-tab name="profile" icon="movie" label="Profile" />
         </q-tabs>
       <!-- </q-page-sticky> -->
     </div>
@@ -34,9 +34,11 @@
         </interview>
       </q-tab-panel>
 
-      <q-tab-panel name="progress">
-        <div class="text-h6">Progress</div>
-        Lorem ipsum dolor sit amet consectetur adipisicing elit.
+      <q-tab-panel name="profile">
+        <div class="text-h6">Profile</div>
+        <profile>
+
+        </profile>
       </q-tab-panel>
     </q-tab-panels>
   </div>
@@ -47,9 +49,10 @@
 import { defineComponent } from '@vue/composition-api'
 import Index from 'src/pages/Index.vue'
 import Interview from 'src/pages/Interview.vue'
+import Profile from 'src/pages/Profile.vue'
 
 export default defineComponent({
-  components: { Index, Interview },
+  components: { Index, Interview, Profile },
   name: 'MainLayout',
   data () {
 
