@@ -2,7 +2,7 @@
   <div class="q-pa-md row justify-center">
     <div>
     <q-card v-for="(vac, index) in vacancyList" :key="vac._id" 
-    @click="clickCard(vac), $forceUpdate()" clickable v-ripple class="my-box cursor-pointer q-hoverable">
+    @click="clickCard(vac), $forceUpdate()" clickable v-ripple class="my-box cursor-pointer q-hoverable q-ma-sm">
       <span class="q-focus-helper"></span>
         <q-item class="corpCard">
 
@@ -20,8 +20,8 @@
       </q-card>
     </div>
     <div>
-  <vacancy-card :card="card" :vacancyInfo="vacancyInfo"  :badge="badge"></vacancy-card>
-  </div>
+      <vacancy-card :card="card" :vacancyInfo="vacancyInfo"  :badge="badge"></vacancy-card>
+    </div>
   </div>
 </template>
 
@@ -91,8 +91,6 @@ export default {
       }
       console.log(this.vacancyList);
     }
-
-
   }
 }
 </script>
