@@ -9,7 +9,7 @@
           <div class="row no-wrap items-center">
             <div class="col text-h6 ellipsis">
               
-              {{vacancyInfo.vacancy.title}}
+              {{vacancyInfo.title}}
             </div>
             <div>
               <q-badge class="badge" outline color="teal">{{badge}}</q-badge>
@@ -23,10 +23,17 @@
 
         <q-card-section class="q-pt-none">
           <div class="text-subtitle1">
-            {{vacancyInfo.vacancy.corporation}}
+            {{vacancyInfo.company}}
           </div>
+          </br>
           <div class="text-caption text-grey">
-            {{vacancyInfo.vacancy.description}}
+            {{vacancyInfo.description}}
+          </div>
+          </br>
+          <div class="text-subtitle3 text-black">
+            email: {{vacancyInfo.contact.email}}
+            </br>
+            nummer: {{vacancyInfo.contact.phone}}
           </div>
         </q-card-section>
 

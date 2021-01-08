@@ -7,10 +7,39 @@
     <!-- EDIT PANEL -->
     <div class='myDIV'>
       PROFILE
+      <q-input :readonly='readOnly' class='q-pa-sm' filled v-model="username" input-class="text-right" label-slot clearable>
+        <template v-slot:label>
+          <div class="row items-center all-pointer-events">
+            Voornaam
+          </div>
+        </template>
+      </q-input>
+      <q-input :readonly='readOnly' class='q-pa-sm' filled v-model="surname" input-class="text-right" label-slot clearable>
+        <template v-slot:label>
+          <div class="row items-center all-pointer-events">
+            Achternaam
+          </div>
+        </template>
+      </q-input>
+      <q-input :readonly='readOnly' class='q-pa-sm' filled v-model="gender" input-class="text-right" label-slot clearable>
+        <template v-slot:label>
+          <div class="row items-center all-pointer-events">
+            Genderrol
+          </div>
+        </template>
+      </q-input>
+
       <q-input :readonly='readOnly' class='q-pa-sm' filled v-model="email" input-class="text-right" label-slot clearable>
         <template v-slot:label>
           <div class="row items-center all-pointer-events">
             Email adres
+          </div>
+        </template>
+      </q-input>
+      <q-input :readonly='readOnly' class='q-pa-sm' filled v-model="phonenumber" input-class="text-right" label-slot clearable>
+        <template v-slot:label>
+          <div class="row items-center all-pointer-events">
+            Telefoonnummer
           </div>
         </template>
       </q-input>
@@ -29,7 +58,6 @@
         />
     </div>
     <q-btn @click="editForm" :label="editLabel" type="edit" color="teal"/>
-    <q-btn @click="getProfile" label="Submit" type="submit" color="teal"/>
   </q-page>
 </template>
 
@@ -40,37 +68,104 @@ export default {
   },
   data () {
     return {
+      // profile: this.getProfile(),
+      username: this.getUsername(),
+      surname: this.getSurname(),
+      gender: this.getGender(),
+      email: this.getEmail(),
+      phonenumber: this.getPhonenumber(),
+      cv: this.getCV(),
+
       file: null,
-      profile: this.getProfile(),
       readOnly: true,
       editLabel: 'Bewerk',
-      email: this.getEmail(),
+
 
     }
   },
   mounted() {
-    this.editForm()
   },
   methods: {
     getProfile() {
-      fetch("http://localhost:8080/api/users/5ff239dab218b73fb40bac84")
+      fetch("https://api-quasapp.herokuapp.com/api/users/5ff39b22986ad52a2476e81a")
                 .then(response => response.json())
                 .then(data => (this.profile = data));
     },
-    getEmail() {
-      fetch("http://localhost:8080/api/users/5ff239dab218b73fb40bac84")
+    getUsername() {
+      fetch("https://api-quasapp.herokuapp.com/api/users/5ff39b22986ad52a2476e81a/username")
           .then(response => response.json())
-          .then(data => (this.email = data.data.email));
+          .then(data => (this.username = data.data));
+          // console.log(this.username)
+    },
+    getSurname() {
+      fetch("https://api-quasapp.herokuapp.com/api/users/5ff39b22986ad52a2476e81a/surname")
+                .then(response => response.json())
+                .then(data => (this.surname = data.data));
+    },
+    getGender() {
+      fetch("https://api-quasapp.herokuapp.com/api/users/5ff39b22986ad52a2476e81a/gender")
+          .then(response => response.json())
+          .then(data => (this.gender = data.data));
+    },    
+    getEmail() {
+      fetch("https://api-quasapp.herokuapp.com/api/users/5ff39b22986ad52a2476e81a/email")
+                .then(response => response.json())
+                .then(data => (this.email = data.data));
+    },
+    getPhonenumber() {
+      fetch("https://api-quasapp.herokuapp.com/api/users/5ff39b22986ad52a2476e81a/phone")
+          .then(response => response.json())
+          .then(data => (this.phonenumber = data.data));
+    },
+    getCV() {
+      fetch("https://api-quasapp.herokuapp.com/api/users/5ff39b22986ad52a2476e81a/cv")
+          .then(response => response.json())
+          .then(data => (this.cv = data.data));
+    },
+    updateUsername() {
+      fetch("https://api-quasapp.herokuapp.com/api/users/5ff39b22986ad52a2476e81a/username", {
+        method: 'PUT',
+      })
+      .then(response => response.json())
+      .then(data => (this.surname = data.data));
+      console.log(this.username)
+          
+    },
+    updateSurname() {
+      fetch("https://api-quasapp.herokuapp.com/api/users/5ff39b22986ad52a2476e81a/surname")
+                .then(response => response.json())
+                .then(data => (this.surname = data.data));
+    },
+    updateGender() {
+      fetch("https://api-quasapp.herokuapp.com/api/users/5ff39b22986ad52a2476e81a/gender")
+          .then(response => response.json())
+          .then(data => (this.gender = data.data));
+    },    
+    updateEmail() {
+      fetch("https://api-quasapp.herokuapp.com/api/users/5ff39b22986ad52a2476e81a/email")
+                .then(response => response.json())
+                .then(data => (this.email = data.data));
+    },
+    updatePhonenumber() {
+      fetch("https://api-quasapp.herokuapp.com/api/users/5ff39b22986ad52a2476e81a/phone")
+          .then(response => response.json())
+          .then(data => (this.phonenumber = data.data));
+    },
+    updateCV() {
+      fetch("https://api-quasapp.herokuapp.com/api/users/5ff39b22986ad52a2476e81a/cv")
+          .then(response => response.json())
+          .then(data => (this.cv = data.data));
     },
     editForm() {
       if(this.readOnly == true){
-        this.email = this.profile.data.email
         this.readOnly = false;
         this.editLabel = 'Opslaan'
+        this.updateUsername();
+        console.log(this.username)
+
       } else {
         this.readOnly = true
         this.editLabel = 'Bewerk'
-        console.log(this.profile)
       }
 
     },

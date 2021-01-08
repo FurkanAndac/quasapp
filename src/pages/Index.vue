@@ -1,15 +1,15 @@
 <template>
   <div class="q-pa-md row justify-center">
     <div>
-    <q-card v-for="(vac, index) in vacancyList" :key="vac.corporation" 
+    <q-card v-for="(vac, index) in vacancyList" :key="vac._id" 
     @click="clickCard(vac), $forceUpdate()" clickable v-ripple class="my-box cursor-pointer q-hoverable">
       <span class="q-focus-helper"></span>
         <q-item class="corpCard">
 
           <q-item-section>
-            <q-item-label class="text-weight-bold" header>{{vacancyList[index].vacancy.corporation}} - {{vacancyList[0].vacancy.title}}</q-item-label>
+            <q-item-label class="text-weight-bold" header>{{vacancyList[index].company}} - {{vacancyList[index].title}}</q-item-label>
             <!-- <q-item-label class="text-weight-bold" caption>{{vacancyList[0].vacancy.corporation}}</q-item-label> -->
-            <q-item-label caption lines="7">{{vacancyList[index].vacancy.description}}</q-item-label>
+            <q-item-label caption lines="7">{{vacancyList[index].description}}</q-item-label>
           </q-item-section>
 
           <q-item-section side top>
@@ -40,10 +40,34 @@ export default {
       vacancyList: []
     }
   },
+  created () {
+    // this.$root.log = function log(data) {
+    //   for (let i = 0; i < data.data.length; i += 1) {
+    //     if (typeof (data) === 'object') {
+    //       try {
+    //         data = JSON.parse(JSON.stringify(data));
+    //         console.log(data.data[i])
+    //         // return this.vacancyList.push(data.data[i])
+    //       } catch (e) {
+    //         console.error(e);
+    //       }
+    //     }
+
+
+    //   }
+    //   // this.vacancyList = data;
+    //   console.log(this.vacancyList);
+    // }
+  },
   mounted() {
-      fetch("http://json-gen.com/rest/service/get/npl1MgCkJyxmarBcY4Ol2LyGRNyjLYc")
+    // fetch("https://api-quasapp.herokuapp.com/api/vacancies")
+    //   .then(response => response.json())
+    //   .then(data => (this.$root.log(data), this.vacancyList.push(data), this.$root.log(this.vacancyList[0])))
+      fetch("https://api-quasapp.herokuapp.com/api/vacancies")
         .then(response => response.json())
-        .then(data => (this.vacancyList = data));
+        .then(data => (this.parser(data)))
+
+
   },
   methods: {
     clickCard (param) {
@@ -53,6 +77,20 @@ export default {
       // console.log(param)
       console.log(this.card)
     },
+    parser(data) {
+      for (let i = 0; i < data.data.length; i += 1) {
+        if (typeof (data) === 'object') {
+          try {
+            data = JSON.parse(JSON.stringify(data));
+            console.log(data.data[i])
+            this.vacancyList.push(data.data[i])
+          } catch (e) {
+            console.error(e);
+          }
+        }
+      }
+      console.log(this.vacancyList);
+    }
 
 
   }
