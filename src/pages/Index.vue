@@ -1,80 +1,90 @@
 <template>
   <div class="q-pa-md row justify-center">
     <div>
-    <q-card v-for="(vac, index) in vacancyList" :key="vac._id" 
-    @click="clickCard(vac), $forceUpdate()" clickable v-ripple class="my-box cursor-pointer q-hoverable q-ma-sm">
-      <span class="q-focus-helper"></span>
-        <q-item class="corpCard">
+      <div>
+        <q-card v-for="(vac, index) in slicedVacancies" :key="vac._id" 
+          @click="clickCard(vac), $forceUpdate()" clickable v-ripple class="my-box cursor-pointer q-hoverable q-ma-sm">
+          <span class="q-focus-helper"></span>
+          <q-item class="corpCard">
 
-          <q-item-section>
-            <q-item-label class="text-weight-bold" header>{{vacancyList[index].company}} - {{vacancyList[index].title}}</q-item-label>
-            <!-- <q-item-label class="text-weight-bold" caption>{{vacancyList[0].vacancy.corporation}}</q-item-label> -->
-            <q-item-label caption lines="7">{{vacancyList[index].description}}</q-item-label>
-          </q-item-section>
+            <q-item-section>
+              <q-item-label class="text-weight-bold" header>{{slicedVacancies[index].company}} - {{slicedVacancies[index].title}}</q-item-label>
+              <!-- <q-item-label class="text-weight-bold" caption>{{vacancyList[0].vacancy.corporation}}</q-item-label> -->
+              <q-item-label caption lines="7">{{slicedVacancies[index].description}}</q-item-label>
+            </q-item-section>
 
-          <q-item-section side top>
-            <q-badge class="badge" outline color="teal">{{badge}}</q-badge>
-          </q-item-section>
+            <q-item-section side top>
+              <q-badge class="badge" outline color="teal">{{badge}}</q-badge>
+            </q-item-section>
 
-        </q-item>
-      </q-card>
+          </q-item>
+        </q-card>
+      </div>
+      <div>
+        <vacancy-card :card="card" :vacancyInfo="vacancyInfo" :badge="badge"></vacancy-card>
+      </div>
     </div>
-    <div>
-      <vacancy-card :card="card" :vacancyInfo="vacancyInfo"  :badge="badge"></vacancy-card>
+    <div class="info q-pa-xs">
+      <vacancy-pagination @click-page="switchPage"
+        :vacancyList="vacancyList"
+        :current="current"
+        :total="total"
+        :perPage="perPage"></vacancy-pagination>
     </div>
   </div>
 </template>
 
 <script lang="js">
-import { vacancy } from "src/assets/vacancy.json"
 import VacancyCard from "src/components/VacancyCard.vue"
+import VacancyPagination from "src/components/VacancyPagination.vue"
 export default {
   components: {
-    'vacancy-card': VacancyCard
+    'vacancy-card': VacancyCard,
+    'vacancy-pagination': VacancyPagination
   },
   data () {
     return {
       card: false,
       badge: "ok",
       vacancyInfo: null,
-      vacancyList: []
+      vacancyList: [],
+      slicedVacancies: [],
+
+      current: this.current || 1,
+      total: 1,
+      perPage: 3,
     }
   },
   created () {
-    // this.$root.log = function log(data) {
-    //   for (let i = 0; i < data.data.length; i += 1) {
-    //     if (typeof (data) === 'object') {
-    //       try {
-    //         data = JSON.parse(JSON.stringify(data));
-    //         console.log(data.data[i])
-    //         // return this.vacancyList.push(data.data[i])
-    //       } catch (e) {
-    //         console.error(e);
-    //       }
-    //     }
-
-
-    //   }
-    //   // this.vacancyList = data;
-    //   console.log(this.vacancyList);
-    // }
   },
   mounted() {
-    // fetch("https://api-quasapp.herokuapp.com/api/vacancies")
-    //   .then(response => response.json())
-    //   .then(data => (this.$root.log(data), this.vacancyList.push(data), this.$root.log(this.vacancyList[0])))
-      fetch("https://api-quasapp.herokuapp.com/api/vacancies")
-        .then(response => response.json())
-        .then(data => (this.parser(data)))
-
+    fetch("https://api-quasapp.herokuapp.com/api/vacancies")
+      .then(response => response.json())
+      .then(data => (this.parser(data)));
 
   },
+  watch: {
+    current: (newCurrent, oldCurrent) => {
+      console.log("Page change from " + oldCurrent + " to " + newCurrent)
+    }
+  },
   methods: {
+    switchPage(currentPage) {
+      this.current = currentPage
+      this.paginate(this.vacancyList)
+    },
+    paginate(vacancies) {
+      let from = (this.current * this.perPage) - this.perPage
+      let to = this.current * this.perPage
+      let slicedVacancies = vacancies.slice(from, to)
+      console.log(slicedVacancies)
+
+      this.slicedVacancies = slicedVacancies
+    },
     clickCard (param) {
       this.card = true
       this.vacancyInfo = param
       console.log(this.vacancyInfo)
-      // console.log(param)
       console.log(this.card)
     },
     parser(data) {
@@ -82,14 +92,13 @@ export default {
         if (typeof (data) === 'object') {
           try {
             data = JSON.parse(JSON.stringify(data));
-            console.log(data.data[i])
             this.vacancyList.push(data.data[i])
           } catch (e) {
             console.error(e);
           }
         }
       }
-      console.log(this.vacancyList);
+      this.paginate(this.vacancyList);
     }
   }
 }
@@ -101,6 +110,15 @@ export default {
   height: 80vh
   border-radius: 3px
   padding: 8px
+  
+.info 
+  height: 45px 
+  position: fixed
+  bottom:0%
+  width:100%
+  background-color: #FFFFFF
+  opacity: 1
+
 
 .custom-info pre
   // width: 180px

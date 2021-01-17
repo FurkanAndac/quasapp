@@ -7,7 +7,7 @@
     <!-- EDIT PANEL -->
     <div class='myDIV'>
       PROFILE
-      <q-input :readonly='readOnly' class='q-pa-sm' filled v-model="username" input-class="text-right" label-slot clearable>
+      <q-input :readonly='readOnly' class='q-pa-sm' filled v-model="name" input-class="text-right" label-slot clearable>
         <template v-slot:label>
           <div class="row items-center all-pointer-events">
             Voornaam
@@ -49,19 +49,26 @@
           write to it, so we only have an @input listener
         -->
 
-      <q-input 
+      <!-- <q-input 
         class="q-pa-sm"
         @input="val => { file = val[0] }"
         filled
         type="file"
         hint="Curriculum Vitae"
-        />
+        /> -->
+      <q-file class='q-pa-sm' color="teal" filled v-model="model" label="Label">
+        <template v-slot:prepend>
+          <q-icon name="cloud_upload" />
+        </template>
+      </q-file>
     </div>
     <q-btn @click="editForm" :label="editLabel" type="edit" color="teal"/>
   </q-page>
 </template>
 
 <script>
+import { api } from '../assets/apiRoutes.js'
+
 export default {
   // name: 'PageName',
   components: {
@@ -69,14 +76,15 @@ export default {
   data () {
     return {
       // profile: this.getProfile(),
-      username: this.getUsername(),
+      name: this.getName(),
       surname: this.getSurname(),
       gender: this.getGender(),
       email: this.getEmail(),
       phonenumber: this.getPhonenumber(),
       cv: this.getCV(),
 
-      file: null,
+      model: null,
+      file: this.getCV(),
       readOnly: true,
       editLabel: 'Bewerk',
 
@@ -91,79 +99,130 @@ export default {
                 .then(response => response.json())
                 .then(data => (this.profile = data));
     },
-    getUsername() {
-      fetch("https://api-quasapp.herokuapp.com/api/users/5ff39b22986ad52a2476e81a/username")
+    getName() {
+      fetch(api.name)
           .then(response => response.json())
-          .then(data => (this.username = data.data));
-          // console.log(this.username)
+          .then(data => (this.name = data.data));
+          // console.log(this.name)
     },
     getSurname() {
-      fetch("https://api-quasapp.herokuapp.com/api/users/5ff39b22986ad52a2476e81a/surname")
+      fetch(api.surname)
                 .then(response => response.json())
                 .then(data => (this.surname = data.data));
     },
     getGender() {
-      fetch("https://api-quasapp.herokuapp.com/api/users/5ff39b22986ad52a2476e81a/gender")
+      fetch(api.gender)
           .then(response => response.json())
           .then(data => (this.gender = data.data));
     },    
     getEmail() {
-      fetch("https://api-quasapp.herokuapp.com/api/users/5ff39b22986ad52a2476e81a/email")
+      fetch(api.email)
                 .then(response => response.json())
                 .then(data => (this.email = data.data));
     },
     getPhonenumber() {
-      fetch("https://api-quasapp.herokuapp.com/api/users/5ff39b22986ad52a2476e81a/phone")
+      fetch(api.phone)
           .then(response => response.json())
           .then(data => (this.phonenumber = data.data));
     },
     getCV() {
-      fetch("https://api-quasapp.herokuapp.com/api/users/5ff39b22986ad52a2476e81a/cv")
+      fetch(api.CV)
           .then(response => response.json())
-          .then(data => (this.cv = data.data));
+          .then(data => (this.file = data.data, console.log(atob(this.file.data))))
+          .then(encodedFile => (console.log(atob(encodedFile))));
     },
-    updateUsername() {
-      fetch("https://api-quasapp.herokuapp.com/api/users/5ff39b22986ad52a2476e81a/username", {
-        method: 'PUT',
-      })
-      .then(response => response.json())
-      .then(data => (this.surname = data.data));
-      console.log(this.username)
-          
+    updateName() {
+      fetch(api.name, {
+        method: 'POST',
+        headers:{
+            'Accept': 'application/json',
+            'crossDomain':'true',
+            'Content-Type': 'application/json',
+            'Pragma': 'no-cache',
+            'Access-Control-Allow-Origin': '*'
+        },        
+        body: JSON.stringify({name: this.name}),
+      }).then(x => console.log(x))
+      // .then(response => response.json())
+      // .then(data => (this.name = data.data, console.log(
+      //   "Succesfully changed to: ", this.name
+      // )));          
     },
     updateSurname() {
-      fetch("https://api-quasapp.herokuapp.com/api/users/5ff39b22986ad52a2476e81a/surname")
-                .then(response => response.json())
-                .then(data => (this.surname = data.data));
+      fetch(api.surname, {
+        method: 'POST',
+        headers:{
+            'Accept': 'application/json',
+            'crossDomain':'true',
+            'Content-Type': 'application/json',
+            'Pragma': 'no-cache',
+            'Access-Control-Allow-Origin': '*'
+        },        
+        body: JSON.stringify({surname: this.surname}),
+      }).then(x => console.log(x))
     },
     updateGender() {
-      fetch("https://api-quasapp.herokuapp.com/api/users/5ff39b22986ad52a2476e81a/gender")
-          .then(response => response.json())
-          .then(data => (this.gender = data.data));
+      fetch(api.gender, {
+        method: 'POST',
+        headers:{
+            'Accept': 'application/json',
+            'crossDomain':'true',
+            'Content-Type': 'application/json',
+            'Pragma': 'no-cache',
+            'Access-Control-Allow-Origin': '*'
+        },        
+        body: JSON.stringify({gender: this.gender}),
+      }).then(x => console.log(x))
     },    
     updateEmail() {
-      fetch("https://api-quasapp.herokuapp.com/api/users/5ff39b22986ad52a2476e81a/email")
-                .then(response => response.json())
-                .then(data => (this.email = data.data));
+      fetch(api.email, {
+        method: 'POST',
+        headers:{
+            'Accept': 'application/json',
+            'crossDomain':'true',
+            'Content-Type': 'application/json',
+            'Pragma': 'no-cache',
+            'Access-Control-Allow-Origin': '*'
+        },        
+        body: JSON.stringify({email: this.email}),
+      }).then(x => console.log(x))
     },
     updatePhonenumber() {
-      fetch("https://api-quasapp.herokuapp.com/api/users/5ff39b22986ad52a2476e81a/phone")
-          .then(response => response.json())
-          .then(data => (this.phonenumber = data.data));
+      fetch(api.phone, {
+        method: 'POST',
+        headers:{
+            'Accept': 'application/json',
+            'crossDomain':'true',
+            'Content-Type': 'application/json',
+            'Pragma': 'no-cache',
+            'Access-Control-Allow-Origin': '*'
+        },        
+        body: JSON.stringify({phone: this.phonenumber}),
+      }).then(x => console.log(x))
     },
     updateCV() {
-      fetch("https://api-quasapp.herokuapp.com/api/users/5ff39b22986ad52a2476e81a/cv")
-          .then(response => response.json())
-          .then(data => (this.cv = data.data));
+      fetch(api.CV, {
+        method: 'POST',
+        headers:{
+            'Accept': 'application/pdf',
+            'crossDomain':'true',
+            'Content-Type': 'application/pdf',
+            'Pragma': 'no-cache',
+            'Access-Control-Allow-Origin': '*'
+        },        
+        body: JSON.stringify({curriculum_vitae: this.model}),
+      }).then(x => console.log(x))
     },
     editForm() {
       if(this.readOnly == true){
         this.readOnly = false;
         this.editLabel = 'Opslaan'
-        this.updateUsername();
-        console.log(this.username)
-
       } else {
+        console.log(this.file)
+        this.updateName();
+        // this.updateSurname();
+        this.updateCV();
+        console.log(this.model)
         this.readOnly = true
         this.editLabel = 'Bewerk'
       }

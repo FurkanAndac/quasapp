@@ -6,9 +6,9 @@
           v-model="panel"
           horizontal
           class="text-teal " >
-          <q-tab name="vacatures" icon="mail" label="Vacatures" />
-          <q-tab name="interview" icon="alarm" label="Interview" />
-          <q-tab name="profile" icon="movie" label="Profile" />
+          <q-tab name="vacatures" icon="work" label="Vacatures" />
+          <q-tab name="interview" icon="duo" label="Interview" />
+          <q-tab name="profile" icon="account_circle" label="Profile" />
         </q-tabs>
       <!-- </q-page-sticky> -->
     </div>
