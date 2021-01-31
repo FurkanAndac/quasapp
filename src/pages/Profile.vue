@@ -49,18 +49,13 @@
           write to it, so we only have an @input listener
         -->
 
-      <!-- <q-input 
+      <q-input 
         class="q-pa-sm"
         @input="val => { file = val[0] }"
         filled
         type="file"
         hint="Curriculum Vitae"
-        /> -->
-      <q-file class='q-pa-sm' color="teal" filled v-model="model" label="Label">
-        <template v-slot:prepend>
-          <q-icon name="cloud_upload" />
-        </template>
-      </q-file>
+        />
     </div>
     <q-btn @click="editForm" :label="editLabel" type="edit" color="teal"/>
   </q-page>
@@ -84,7 +79,7 @@ export default {
       cv: this.getCV(),
 
       model: null,
-      file: this.getCV(),
+      file: null,
       readOnly: true,
       editLabel: 'Bewerk',
 
@@ -103,7 +98,6 @@ export default {
       fetch(api.name)
           .then(response => response.json())
           .then(data => (this.name = data.data));
-          // console.log(this.name)
     },
     getSurname() {
       fetch(api.surname)
@@ -128,8 +122,7 @@ export default {
     getCV() {
       fetch(api.CV)
           .then(response => response.json())
-          .then(data => (this.file = data.data, console.log(atob(this.file.data))))
-          .then(encodedFile => (console.log(atob(encodedFile))));
+          .then(data => (this.file = data.data))
     },
     updateName() {
       fetch(api.name, {
@@ -143,10 +136,6 @@ export default {
         },        
         body: JSON.stringify({name: this.name}),
       }).then(x => console.log(x))
-      // .then(response => response.json())
-      // .then(data => (this.name = data.data, console.log(
-      //   "Succesfully changed to: ", this.name
-      // )));          
     },
     updateSurname() {
       fetch(api.surname, {
@@ -201,28 +190,28 @@ export default {
       }).then(x => console.log(x))
     },
     updateCV() {
+      const fd = new FormData();
+      fd.append('cv', this.file);
       fetch(api.CV, {
         method: 'POST',
         headers:{
-            'Accept': 'application/pdf',
-            'crossDomain':'true',
-            'Content-Type': 'application/pdf',
-            'Pragma': 'no-cache',
-            'Access-Control-Allow-Origin': '*'
         },        
-        body: JSON.stringify({curriculum_vitae: this.model}),
-      }).then(x => console.log(x))
+        body: fd,
+      }).then(response => response.json()
+      ).then(success => console.log(success)
+      ).catch(error => console.log(error))
     },
     editForm() {
       if(this.readOnly == true){
         this.readOnly = false;
         this.editLabel = 'Opslaan'
       } else {
-        console.log(this.file)
         this.updateName();
-        // this.updateSurname();
+        this.updateSurname();
+        this.updateGender();
+        this.updateEmail();
+        this.updatePhonenumber();
         this.updateCV();
-        console.log(this.model)
         this.readOnly = true
         this.editLabel = 'Bewerk'
       }
