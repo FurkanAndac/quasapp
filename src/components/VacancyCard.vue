@@ -57,17 +57,10 @@ export default {
   props: ['card', 'vacancyInfo', 'badge'],
   data () {
     return {
-      // card1: card
-      // vacancyInfo: {}
     }
   },
   methods: {
 
   },
-  // created () {
-  //   this.card = this.card1
-  //   this.card1 = this.card
-  //   console.log(this.card1)
-  // }
 }
 </script>

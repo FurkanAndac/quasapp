@@ -37,6 +37,8 @@
 <script lang="js">
 import VacancyCard from "src/components/VacancyCard.vue"
 import VacancyPagination from "src/components/VacancyPagination.vue"
+import { api } from '../assets/apiRoutes.js'
+
 export default {
   components: {
     'vacancy-card': VacancyCard,
@@ -58,7 +60,7 @@ export default {
   created () {
   },
   mounted() {
-    fetch("https://api-quasapp.herokuapp.com/api/vacancies")
+    fetch(api.vacancies)
       .then(response => response.json())
       .then(data => (this.parser(data)));
 

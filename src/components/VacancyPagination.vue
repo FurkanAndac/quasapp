@@ -2,7 +2,7 @@
   <div class="flex flex-center">
     <q-pagination
       v-model="cur"
-      color="teal "
+      color="teal"
       :max="computeMaxpage()"
       :max-pages="6"
       :boundary-numbers="false"
