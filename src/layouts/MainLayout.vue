@@ -27,7 +27,7 @@
       class="bg-white text-teal shadow-2 rounded-borders custom-height"
     >
       <q-tab-panel name="vacatures">
-        <div class="text-h6">Vacatures</div>
+        <div class="text-h6"></div>
         <index>
 
         </index>

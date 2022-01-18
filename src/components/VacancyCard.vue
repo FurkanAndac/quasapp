@@ -4,12 +4,16 @@
       <q-card class="my-card">
 
         <q-card-section>
-          
+          <q-item-section avatar>
+            <q-avatar>
+              <img src="https://cdn.quasar.dev/img/boy-avatar.png">
+            </q-avatar>
+        </q-item-section>
 
           <div class="row no-wrap items-center">
             <div class="col text-h6 ellipsis">
               
-              {{vacancyInfo.title}}
+              {{entryInfo.name}} {{entryInfo.surname}}
             </div>
             <div>
               <q-badge class="badge" outline color="teal">{{badge}}</q-badge>
@@ -23,17 +27,17 @@
 
         <q-card-section class="q-pt-none">
           <div class="text-subtitle1">
-            {{vacancyInfo.company}}
+            {{entryInfo.bio}}
           </div>
           </br>
           <div class="text-caption text-grey">
-            {{vacancyInfo.description}}
+            {{entryInfo.bio}}
           </div>
           </br>
           <div class="text-subtitle3 text-black">
-            email: {{vacancyInfo.contact.email}}
+            email: {{entryInfo.email}}
             </br>
-            nummer: {{vacancyInfo.contact.phone}}
+            nummer: {{entryInfo.phone}}
           </div>
         </q-card-section>
 
@@ -54,7 +58,7 @@
 <script>
 export default {
   name: 'VacancyCard',
-  props: ['card', 'vacancyInfo', 'badge'],
+  props: ['card', 'entryInfo', 'badge'],
   data () {
     return {
     }

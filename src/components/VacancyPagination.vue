@@ -14,10 +14,10 @@
 <script>
 export default {
   name: 'VacancyPagination',
-  props: ['vacancyList', 'current', 'total', 'perPage'],
+  props: ['entryList', 'current', 'total', 'perPage'],
   data () {
     return {
-      vacancies: this.vacancyList,
+      entries: this.entryList,
       cur: this.current,
       tot: this.total,
       pPage: this.perPage
@@ -31,13 +31,13 @@ export default {
   },
   methods: {
     computeMaxpage: function () {
-      if(this.vacancies == null || undefined) {
+      if(this.entries == null || undefined) {
         this.tot
         console.log(this.tot)
         return this.tot
       } else {
-        this.tot = Math.ceil(this.vacancies.length / this.pPage)
-        console.log(this.vacancies)
+        this.tot = Math.ceil(this.entries.length / this.pPage)
+        console.log(this.entries)
         return this.tot
       }
     },

@@ -49,13 +49,11 @@
           write to it, so we only have an @input listener
         -->
 
-      <q-input 
-        class="q-pa-sm"
-        @input="val => { file = val[0] }"
-        filled
-        type="file"
-        hint="Curriculum Vitae"
-        />
+      <q-file :readonly='readOnly' v-model="file">
+        <template v-slot:prepend>
+          <q-icon name="attach_file" />
+        </template>  
+      </q-file>
     </div>
     <q-btn @click="editForm" :label="editLabel" type="edit" color="teal"/>
   </q-page>
@@ -78,7 +76,6 @@ export default {
       phonenumber: this.getPhonenumber(),
       cv: this.getCV(),
 
-      model: null,
       file: null,
       readOnly: true,
       editLabel: 'Bewerk',
@@ -90,9 +87,9 @@ export default {
   },
   methods: {
     getProfile() {
-      fetch("https://api-quasapp.herokuapp.com/api/users/5ff39b22986ad52a2476e81a")
-                .then(response => response.json())
-                .then(data => (this.profile = data));
+      fetch(api.user)
+          .then(response => response.json())
+          .then(data => (this.profile = data));
     },
     getName() {
       fetch(api.name)
@@ -123,6 +120,7 @@ export default {
       fetch(api.CV)
           .then(response => response.json())
           .then(data => (this.file = data.data))
+          .then(x => console.log(x))
     },
     updateName() {
       fetch(api.name, {
