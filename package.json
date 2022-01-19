@@ -11,9 +11,11 @@
     "deploy": "quasar build && firebase deploy"
   },
   "dependencies": {
+    "@firebase/auth": "^0.19.5",
     "@quasar/extras": "^1.0.0",
     "@vue/composition-api": "^0.6.4",
     "core-js": "^3.6.5",
+    "firebase": "^9.6.3",
     "mongodb": "^3.6.3",
     "quasar": "^1.0.0"
   },
