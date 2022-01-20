@@ -78,7 +78,7 @@ export default defineComponent({
      }
   },
   methods: {
-    checkAuth(userInfo, accessToken) {
+    checkAuth(userInfo: {}, accessToken: string) {
       this.signedInUserInfo = userInfo
       this.signedInAccessToken = accessToken
       if(this.signedInAccessToken != "") {
