@@ -2,6 +2,7 @@
 const firebaseConfig = {
   apiKey: "AIzaSyDNeJ1VccteoOHME_CbN4dM-KkMJGcFH8w",
   authDomain: "quasapp-95a6c.firebaseapp.com",
+  databaseURL: "https://quasapp-95a6c-default-rtdb.europe-west1.firebasedatabase.app",
   projectId: "quasapp-95a6c",
   storageBucket: "quasapp-95a6c.appspot.com",
   messagingSenderId: "236247285227",

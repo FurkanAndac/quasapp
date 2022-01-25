@@ -11,7 +11,7 @@
           horizontal
           class="text-blue-grey-14" >
           <q-tab name="vacatures" icon="work" label="Vacatures" />
-          <q-tab v-show="true" name="interview" icon="duo" label="Interview" />
+          <q-tab v-show="signedIn" name="interview" icon="duo" label="Interview" />
           <q-tab v-show="signedIn" name="profile" icon="account_circle" label="Profile" />
           <login @signed-in="checkAuth"></login>
         </q-tabs>
@@ -34,7 +34,7 @@
         </index>
       </q-tab-panel>
 
-      <q-tab-panel v-show="true" name="interview">
+      <q-tab-panel v-show="signedIn" name="interview">
         <div class="text-h6">Interview</div>
         <interview>
           
@@ -59,6 +59,8 @@ import Interview from 'src/pages/Interview.vue'
 import Profile from 'src/pages/Profile.vue'
 import Login from 'src/components/loginDialogue.vue'
 import Vue from 'vue'
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+
 
 // const sessionState = Vue.prototype.$session
 // const signedIn = Vue.prototype.$signedIn = false
@@ -84,11 +86,24 @@ export default defineComponent({
       if(this.signedInAccessToken != "") {
         this.signedIn = true
       }
-      console.log(this.signedInUserInfo)
-      console.log(this.signedInAccessToken)
-      console.log(this.signedIn)
-    }
-  }
+      // console.log(this.signedInUserInfo)
+      // console.log(this.signedInAccessToken)
+      // console.log(this.signedIn)
+    },
+  },
+  created() {
+    const auth = getAuth();
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        this.signedIn = true
+        user.getIdToken().then(function(idToken) {
+          console.log(idToken);
+        }) 
+      } else {
+        this.signedIn = false
+      }
+    })
+  },
 })
 </script>
 
