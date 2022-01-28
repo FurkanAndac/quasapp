@@ -1,17 +1,25 @@
 <template>
   <q-layout view="hHh lpR fFf">
+
     <div class="custom-height-tabs">
+      <q-header class="bg-teal-3" elevated reveal>
+
       <!-- <q-page-sticky expand position="top"> -->
         <q-tabs
+          
           v-model="panel"
           horizontal
-          class="text-teal " >
-          <q-tab name="vacatures" icon="mail" label="Vacatures" />
-          <q-tab name="interview" icon="alarm" label="Interview" />
-          <q-tab name="profile" icon="movie" label="Profile" />
+          class="text-blue-grey-14" >
+          <q-tab name="vacatures" icon="work" label="Vacatures" />
+          <q-tab v-show="signedIn" name="interview" icon="duo" label="Interview" />
+          <q-tab v-show="signedIn" name="profile" icon="account_circle" label="Profile"/>
+          <login v-show="!signedIn" @signed-in="checkAuth"></login>
+          <q-btn v-show="signedIn" flat stack icon="logout" label="Logout" @click="logout()"/>
         </q-tabs>
       <!-- </q-page-sticky> -->
+      </q-header>
     </div>
+
     <div>
     <q-tab-panels
       v-model="panel"
@@ -21,20 +29,20 @@
       class="bg-white text-teal shadow-2 rounded-borders custom-height"
     >
       <q-tab-panel name="vacatures">
-        <div class="text-h6">Vacatures</div>
+        <div class="text-h6"></div>
         <index>
 
         </index>
       </q-tab-panel>
 
-      <q-tab-panel name="interview">
+      <q-tab-panel v-show="signedIn" name="interview">
         <div class="text-h6">Interview</div>
         <interview>
           
         </interview>
       </q-tab-panel>
 
-      <q-tab-panel name="profile">
+      <q-tab-panel v-show="signedIn" name="profile">
         <div class="text-h6">Profile</div>
         <profile>
 
@@ -50,22 +58,69 @@ import { defineComponent } from '@vue/composition-api'
 import Index from 'src/pages/Index.vue'
 import Interview from 'src/pages/Interview.vue'
 import Profile from 'src/pages/Profile.vue'
+import Login from 'src/components/loginDialogue.vue'
+import Vue from 'vue'
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+
+
+// const sessionState = Vue.prototype.$session
+// const signedIn = Vue.prototype.$signedIn = false
+
+
 
 export default defineComponent({
-  components: { Index, Interview, Profile },
+  components: { Index, Interview, Profile, 'login': Login },
   name: 'MainLayout',
   data () {
 
     return { 
-      panel: 'vacatures'
+      panel: 'vacatures',
+      signedIn: false,
+      signedInUserInfo: {},
+      signedInAccessToken: ""
      }
-  }
+  },
+  methods: {
+    checkAuth(userInfo: {}, accessToken: string) {
+      this.signedInUserInfo = userInfo
+      this.signedInAccessToken = accessToken
+      if(this.signedInAccessToken != "") {
+        this.signedIn = true
+      }
+      // console.log(this.signedInUserInfo)
+      // console.log(this.signedInAccessToken)
+      // console.log(this.signedIn)
+    },
+    logout() {
+      const auth = getAuth();
+      auth.signOut().then(function() {
+        // Sign-out successful.
+        localStorage.clear()
+        console.log("succesfully signed out")
+      }, function(error) {
+        // An error happened.
+      });
+    },
+  },
+  created() {
+    const auth = getAuth();
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        this.signedIn = true
+        user.getIdToken().then(function(idToken) {
+          console.log(idToken);
+        }) 
+      } else {
+        this.signedIn = false
+      }
+    })
+  },
 })
 </script>
 
 <style lang="sass" scoped>
-  // .custom-height-tabs
-  //   margin-top: 10vh
+  .custom-height-tabs
+    margin-top: 15vh
 
   .custom-height
     height: 190vh

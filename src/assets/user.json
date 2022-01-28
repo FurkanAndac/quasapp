@@ -1,0 +1,12 @@
+{
+    "_id": {
+        "$oid": "6016606379d90398eb11d0ee"
+    },
+    "name": "Furkan",
+    "surname": "Baba",
+    "email": "furkan.baba@hotmail.com",
+    "gender": "babaYigit",
+    "phone": "bok var telefon yok",
+    "bio": "I am Furkan Andac, a 23 year old Information Technology student at the Hogeschool Rotterdam. In my free time I like to game, read and go on walks. When I am not doing any of those things, you can find me coding.",
+    "curriculum_vitae": {}
+}

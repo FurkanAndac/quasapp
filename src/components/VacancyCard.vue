@@ -4,12 +4,16 @@
       <q-card class="my-card">
 
         <q-card-section>
-          
+          <q-item-section avatar>
+            <q-avatar>
+              <img src="https://cdn.quasar.dev/img/boy-avatar.png">
+            </q-avatar>
+        </q-item-section>
 
           <div class="row no-wrap items-center">
             <div class="col text-h6 ellipsis">
               
-              {{vacancyInfo.vacancy.title}}
+              {{entryInfo.name}} {{entryInfo.surname}}
             </div>
             <div>
               <q-badge class="badge" outline color="teal">{{badge}}</q-badge>
@@ -23,10 +27,17 @@
 
         <q-card-section class="q-pt-none">
           <div class="text-subtitle1">
-            {{vacancyInfo.vacancy.corporation}}
+            {{entryInfo.bio}}
           </div>
+          </br>
           <div class="text-caption text-grey">
-            {{vacancyInfo.vacancy.description}}
+            {{entryInfo.bio}}
+          </div>
+          </br>
+          <div class="text-subtitle3 text-black">
+            email: {{entryInfo.email}}
+            </br>
+            nummer: {{entryInfo.phone}}
           </div>
         </q-card-section>
 
@@ -38,6 +49,8 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
+          </br>
+
     </div>
 
 </template>
@@ -45,20 +58,13 @@
 <script>
 export default {
   name: 'VacancyCard',
-  props: ['card', 'vacancyInfo', 'badge'],
+  props: ['card', 'entryInfo', 'badge'],
   data () {
     return {
-      // card1: card
-      // vacancyInfo: {}
     }
   },
   methods: {
 
   },
-  // created () {
-  //   this.card = this.card1
-  //   this.card1 = this.card
-  //   console.log(this.card1)
-  // }
 }
 </script>
