@@ -12,8 +12,9 @@
           class="text-blue-grey-14" >
           <q-tab name="vacatures" icon="work" label="Vacatures" />
           <q-tab v-show="signedIn" name="interview" icon="duo" label="Interview" />
-          <q-tab v-show="signedIn" name="profile" icon="account_circle" label="Profile" />
-          <login @signed-in="checkAuth"></login>
+          <q-tab v-show="signedIn" name="profile" icon="account_circle" label="Profile"/>
+          <login v-show="!signedIn" @signed-in="checkAuth"></login>
+          <q-btn v-show="signedIn" flat stack icon="logout" label="Logout" @click="logout()"/>
         </q-tabs>
       <!-- </q-page-sticky> -->
       </q-header>
@@ -89,6 +90,16 @@ export default defineComponent({
       // console.log(this.signedInUserInfo)
       // console.log(this.signedInAccessToken)
       // console.log(this.signedIn)
+    },
+    logout() {
+      const auth = getAuth();
+      auth.signOut().then(function() {
+        // Sign-out successful.
+        localStorage.clear()
+        console.log("succesfully signed out")
+      }, function(error) {
+        // An error happened.
+      });
     },
   },
   created() {

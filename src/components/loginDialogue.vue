@@ -18,21 +18,33 @@
             Google signin     
           </q-btn>
         </q-card-section>
+        <q-card-section class="q-pt-none">
+          <q-btn class="social-button" @click="socialFacebookLogin">
+            Facebook signin     
+          </q-btn>
+
+        </q-card-section>
 
         <!-- <q-card-actions align="right" class="bg-white text-teal">
           <q-btn flat label="OK" v-close-popup />
         </q-card-actions> -->
       </q-card>
-    </q-dialog></div>
+    </q-dialog>
+  </div>
 </template>
 
 <script>
-import { getAuth, signInWithPopup, GoogleAuthProvider, browserSessionPersistence } from 'firebase/auth';
+import { getAuth, signInWithPopup, GoogleAuthProvider, 
+         browserSessionPersistence, FacebookAuthProvider } from 'firebase/auth';
 import { initializeApp } from 'firebase/app';
 import { firebaseConfig } from '../sso/auth_google_signin'
 import Vue from 'vue'
+import { collection, doc, getFirestore, setDoc, updateDoc } from 'firebase/firestore';
 
 const app = initializeApp(firebaseConfig);
+
+const db = getFirestore()
+const usersRef = collection(db, "users")
 
 export default {
   
@@ -41,6 +53,9 @@ export default {
   data () {
     return {
       login: false,
+      phoneDialogue: false,
+      user: {},
+      token: "",
     }
   },
   methods: {
@@ -64,28 +79,49 @@ export default {
         const credential = GoogleAuthProvider.credentialFromResult(result) ;
         const token = credential.accessToken
         const user = result.user
+        this.user = user
+        this.token = token
+        console.log(this.user)
         this.$emit('signed-in', user, token)
-
-
-
-
-
-        // // console.log(result.user.accessToken)
-        // // This gives you a Google Access Token.
-        // this.token = result.user.accessToken;
-        // // The signed-in user info.
-        // this.user = result.user;
-        // // Signed in confirmation
-        // // this.$emit('signed-in', this.user, this.token, true)
-        // console.log(indexedDB)
+        this.createProfile(user.uid)
       })
 
-                      // console.log(this.signedin)))
-      // Vue.prototype.$signedIn = true
-      // console.log(Vue.prototype.$session)
-      // console.log(Vue.prototype.$signedIn)
-      // this.$forceUpdate();
     },
+    socialFacebookLogin() {
+      // Sign in using a popup.
+      const provider = new FacebookAuthProvider();
+      provider.addScope('email');
+      provider.addScope('public_profile');
+
+      const auth = getAuth();
+      auth.languageCode = 'nl';
+      signInWithPopup(auth, provider)
+      
+      .then((result) => {
+        const credential = FacebookAuthProvider.credentialFromResult(result)
+        // This gives you a Facebook Access Token.
+        const token = credential.accessToken;
+        // The signed-in user info.
+        const user = result.user;
+        // user.photoURL = user.photoURL + "?width=9999"
+        this.user = user
+        this.token = token
+        console.log(this.user)
+        this.$emit('signed-in', user, token)
+        this.createProfile(user.uid)
+      });
+
+    },
+    createProfile(uid) {
+        updateDoc(doc(getFirestore(), "users", uid ), {
+          displayname: this.user.displayName,
+          email: this.user.email,
+          // phone: this.user.phoneNumber,
+          // avatar: this.user.photoURL,
+          creationtime: this.user.metadata.creationTime,
+          providerData: this.user.providerData
+        }, {merge:true})
+    }
   }
 }
 </script>
