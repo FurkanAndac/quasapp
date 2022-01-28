@@ -14,14 +14,17 @@
         </q-card-section>
 
         <q-card-section class="q-pt-none">
-          <q-btn class="social-button" @click="socialGoogleLogin">
-            Google signin     
-          </q-btn>
+          <!-- <div> -->
+          <!-- <q-btn class="social-button" @click="socialGoogleLogin"> -->
+            <img :src="pictureHoverGoogle" @mouseover="googleHover = true"
+              @mouseleave="googleHover = false" @click="socialGoogleLogin" />   
+          <!-- </q-btn> -->
         </q-card-section>
         <q-card-section class="q-pt-none">
-          <q-btn class="social-button" @click="socialFacebookLogin">
-            Facebook signin     
-          </q-btn>
+          <!-- <q-btn class="social-button" @click="socialFacebookLogin"> -->
+            <img src="../assets/facebook-sign-in-button.png" style="width:191px"
+              @click="socialFacebookLogin" />
+          <!-- </q-btn> -->
 
         </q-card-section>
 
@@ -56,7 +59,20 @@ export default {
       phoneDialogue: false,
       user: {},
       token: "",
+
+      googleStatic: require("../assets/btn_google_signin_dark_normal_web.png"),
+      googleHovered: require("../assets/btn_google_signin_dark_focus_web.png"),
+      googleHover: false,
     }
+  },
+  computed: {
+    pictureHoverGoogle () {
+      if (this.googleHover == true) {
+        return this.googleHovered
+      } else {
+        return this.googleStatic
+      }
+    },
   },
   methods: {
     socialGoogleLogin() {

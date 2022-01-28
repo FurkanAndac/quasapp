@@ -54,18 +54,25 @@
           write to it, so we only have an @input listener
         -->
 
-      <q-file :readonly='readOnly' v-model="file">
+      <q-file :readonly='readOnly' v-model="file" label="Curriculum Vitae">
         <template v-slot:prepend>
           <q-icon name="attach_file" />
         </template>  
 
         <template v-slot:after>
-          <q-btn round dense flat icon="send" @click="uploadFile" />
+          <q-btn round dense flat icon="send" @click="uploadTask" />
         </template>
 
       </q-file>
+      <div onclick="location.href='newurl.html';">
+        test
+      </div>
+
+      <div style="text-align:center">
+        <q-btn @click="editForm" :label="editLabel" type="edit" color="teal"/>
+      </div>
+
     </div>
-    <q-btn @click="editForm" :label="editLabel" type="edit" color="teal"/>
   </q-page>
 </template>
 
@@ -104,6 +111,7 @@ export default {
       avatar: "",
       file: null,
       prevFile: this.file,
+      totalFiles: [],
       readOnly: true,
       editLabel: 'Bewerk',
 
@@ -127,6 +135,8 @@ export default {
     })
   },
   mounted() {
+  },
+  computed() {
   },
   methods: {
     getDisplayname() {
@@ -170,35 +180,47 @@ export default {
       const listRef = ref(storage, 'resumes/' + this.user.uid);
       listAll(listRef)
         .then((res) => {
-          res.items.forEach((itemRef) => {
-            // All the items under listRef.
-            this.file = itemRef
-            this.prevFile = itemRef
-          });
+          // res.items.forEach((itemRef) => {
+          //   // All the items under listRef.
+          //   this.file = itemRef
+          //   this.prevFile = itemRef
+          //   this.totalFiles = res.items
+          // });
           console.log(res)
+          this.totalFiles = res
         }).catch((error) => {
           // Uh-oh, an error occurred!
         });
     },
-    uploadFile() {
-      const resumesRef = ref(storage, 'resumes/' + this.user.uid + "/" + this.file.name);
+    uploadTask() {
       this.getResume()
-      this.deleteFile()
+      if (this.totalFiles.items.length >= 1) {
+        this.totalFiles.items.forEach((itemRef) => {
+          this.deleteFile(itemRef.name)
+        })
+      }
+      this.uploadFile(this.file.name)
+    },
+    uploadFile(file) {
+      console.log(this.file)
+      const resumesRef = ref(storage, 'resumes/' + this.user.uid + "/" + file);
       uploadBytes(resumesRef, this.file).then((snapshot) => {
         console.log('uploaded: ' + snapshot )
-      }).then(x => this.getResume())
+      })
     },
-    deleteFile() {
-      const resumesRef = ref(storage, 'resumes/' + this.user.uid + "/" + this.prevFile.name);
-      if (this.file != null) {
+    deleteFile(file) {
+      console.log(this.prevFile)
+      // if (this.prevfile != null || undefined) {
+        const resumesRef = ref(storage, 'resumes/' + this.user.uid + "/" + file);
           // Delete the file
+        console.log(resumesRef)
         deleteObject(resumesRef).then(() => {
           // File deleted successfully
           console.log("file deleted")
         }).catch((error) => {
           // Uh-oh, an error occurred!
         });
-      }
+      // }
     },
     updateGender() {
       updateDoc(doc(usersRef, this.user.uid), {
