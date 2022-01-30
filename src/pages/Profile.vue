@@ -134,10 +134,10 @@ export default {
       }
     })
   },
-  mounted() {
-  },
-  computed() {
-  },
+  // mounted() {
+  // },
+  // computed() {
+  // },
   methods: {
     getDisplayname() {
       this.displayname = this.user.displayName

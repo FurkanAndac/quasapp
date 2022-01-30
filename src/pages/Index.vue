@@ -10,13 +10,13 @@
             <!-- avatar per graduate entry -->
             <q-item-section avatar>
               <q-avatar style="height:75px;width:75px">
-                <img src="https://media-exp1.licdn.com/dms/image/C5603AQG6iZ6-_GCHZA/profile-displayphoto-shrink_200_200/0/1580983566762?e=1648080000&v=beta&t=cQ5T_sWWA8ApzmFVUuPhfAszwKeirS0la3rzu1zCnqo">
+                <img :src="slicedEntries[index].providerData[0].photoURL" >
               </q-avatar>
             </q-item-section>
 
             <!-- Name, surname and description per graduate entry -->
             <q-item-section>
-              <q-item-label class="text-weight-bold">{{slicedEntries[index].name}} {{slicedEntries[index].surname}}</q-item-label>
+              <q-item-label class="text-weight-bold">{{slicedEntries[index].displayname}}</q-item-label>
               <q-item-label caption lines="5">{{slicedEntries[index].bio}}</q-item-label>
             </q-item-section>
 
@@ -47,6 +47,15 @@
 import VacancyCard from "src/components/VacancyCard.vue"
 import VacancyPagination from "src/components/VacancyPagination.vue"
 import { api } from '../assets/apiRoutes.js'
+import { initializeApp } from "firebase/app"
+import { firebaseConfig } from '../sso/auth_google_signin'
+import { getFirestore, collection, doc, getDocs, query, where, limit, startAfter } from "firebase/firestore"; 
+
+
+const firebaseApp = initializeApp(firebaseConfig);
+
+const db = getFirestore()
+// const usersRef = collection(db, "users")
 
 export default {
   components: {
@@ -60,13 +69,22 @@ export default {
       entryInfo: null,
       entryList: [],
       slicedEntries: [],
+      avatar: "",
 
       current: this.current || 1,
       total: 1,
-      perPage: 3,
+      perPage: 2,
+      currentpage: 1,
+
+      mappedEntries: new Map(),
+      entriesKey: [],
+      entriesValue: [],
+      entries: [],
+
     }
   },
   created () {
+    this.getGrads()
   },
   mounted() {
     fetch(api.users)
@@ -80,9 +98,53 @@ export default {
     }
   },
   methods: {
+    getGrads() {
+      const first = query(collection(db, "users"), where("email", "!=", ""));
+
+      const documentSnapshots = getDocs(first);
+      console.log(documentSnapshots)
+      
+      documentSnapshots.then((x) => {
+        x.forEach(doc => {
+          this.mappedEntries.set(doc.id, doc.data())
+          // if (doc.data().providerData[0].providerId === "facebook.com") {
+          //   // console.log("Document data:", docSnap.data());
+          //   this.avatar = doc.data().providerData[0].photoURL + "?width=9999"
+          //   var avatar = document.getElementById("avatar")
+          //   avatar.src = this.avatar
+          // } else {
+          //   this.avatar = doc.data().providerData[0].photoURL
+          //   var avatar = document.getElementById("avatar")
+          //   avatar.src = this.avatar
+          //   // console.log("No such document!");
+          // }
+          console.log(doc.id, " => ", doc.data());
+        });
+        console.log(this.mappedEntries)
+        this.demapper(this.mappedEntries)
+      })
+    },
+    // need to demap getGrads() results for v-for loop in HTML
+    demapper(map) {
+      const demappedEntries = []
+      // const slicedDemappedEntries = []
+      map.forEach(entry => {
+        demappedEntries.push(entry)
+      });
+      this.entriesValue = demappedEntries
+      // let from = (this.current * this.perPage) - this.perPage
+      // let to = this.current * this.perPage
+      // let slicedDemappedEntries = this.entriesValue.slice(from, to)
+      // this.entriesValue = slicedDemappedEntries
+      // this.paginate(this.entriesValue)
+      this.paginate(this.entriesValue)
+      // console.log(slicedDemappedEntries)
+      console.log(this.entriesValue)
+    },
     switchPage(currentPage) {
+      this.card = false
       this.current = currentPage
-      this.paginate(this.entryList)
+      this.paginate(this.entriesValue)
     },
     paginate(entries) {
       let from = (this.current * this.perPage) - this.perPage
@@ -93,7 +155,7 @@ export default {
       this.slicedEntries = slicedEntries
     },
     clickCard (param) {
-      this.card = true
+      // this.card = true
       this.entryInfo = param
       console.log(this.entryInfo)
       console.log(this.card)
@@ -109,7 +171,7 @@ export default {
           }
         }
       }
-      this.paginate(this.entryList);
+      // this.paginate(this.entryList);
     }
   }
 }

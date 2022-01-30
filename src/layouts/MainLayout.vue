@@ -11,7 +11,7 @@
           horizontal
           class="text-blue-grey-14" >
           <q-tab name="vacatures" icon="work" label="Vacatures" />
-          <q-tab v-show="signedIn" name="interview" icon="duo" label="Interview" />
+          <q-tab v-show="!signedIn" name="interview" icon="duo" label="Interview" />
           <q-tab v-show="signedIn" name="profile" icon="account_circle" label="Profile"/>
           <login v-show="!signedIn" @signed-in="checkAuth"></login>
           <q-btn v-show="signedIn" flat stack icon="logout" label="Logout" @click="logout()"/>
@@ -35,7 +35,7 @@
         </index>
       </q-tab-panel>
 
-      <q-tab-panel v-show="signedIn" name="interview">
+      <q-tab-panel v-show="!signedIn" name="interview">
         <div class="text-h6">Interview</div>
         <interview>
           

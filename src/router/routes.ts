@@ -1,4 +1,7 @@
 import { RouteConfig } from 'vue-router'
+import Profile from 'pages/Profile.vue'
+import Interview from 'pages/Interview.vue'
+
 
 const routes: RouteConfig[] = [
   {
@@ -6,8 +9,8 @@ const routes: RouteConfig[] = [
     component: () => import('layouts/MainLayout.vue'),
     children: [
       { path: 'vacancy', component: () => import('pages/Index.vue') },
-      { path: 'interview', component: () => import('pages/Interview.vue') },
-      { path: 'profile', component: () => import('pages/Profile.vue') }
+      { path: 'interview', component: Interview },
+      { path: 'profile', component: Profile }
     ]
   },
 
