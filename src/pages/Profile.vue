@@ -64,8 +64,8 @@
         </template>
 
       </q-file>
-      <div onclick="location.href='newurl.html';">
-        test
+      <div @click="gotoResumeURL">
+        {{resumeName}}
       </div>
 
       <div style="text-align:center">
@@ -83,7 +83,7 @@ import { initializeApp } from "firebase/app"
 import { getFirestore } from "firebase/firestore"
 import { firebaseConfig } from '../sso/auth_google_signin'
 import { collection, doc, setDoc, getDoc, updateDoc } from "firebase/firestore"; 
-import { getStorage, ref, uploadBytes, listAll, deleteObject } from "firebase/storage";
+import { getStorage, ref, uploadBytes, listAll, deleteObject, getDownloadURL } from "firebase/storage";
 
 
 const firebaseApp = initializeApp(firebaseConfig);
@@ -107,6 +107,9 @@ export default {
       gender: "",
       email: "",
       phonenumber: "",
+      resumeURL: "",
+      resumeName: "",
+
 
       avatar: "",
       file: null,
@@ -128,19 +131,34 @@ export default {
         this.getProfile()
         this.loadPhotoURL()
         this.getDisplayname()
+        // lists all resumes
         this.getResume()
+        // gets current resumeURL for resume
+        // this.getResumeInfo()
       } else {
         this.user = {}
       }
     })
   },
+  // watch: {
+  //   resumeObject: (oldName, newName) => {
+  //     console.log("Resume changed from: " + oldName + " to " + newName)
+  //   }
+  // },
   // mounted() {
   // },
-  // computed() {
+  // computed: {
+  //   getResumeInfo() {
+  //     this.resumeObject = this.user.resumeObject
+  //   },
   // },
   methods: {
     getDisplayname() {
       this.displayname = this.user.displayName
+    },
+    gotoResumeURL() {
+      // this.resumeName = this.user.resumeObject.name
+      window.open(this.resumeURL)
     },
     getProfile() {
       const docRef = doc(db, "users", this.user.uid)
@@ -154,6 +172,8 @@ export default {
           this.gender = docSnap.data().gender
           this.email = docSnap.data().email
           this.phonenumber = docSnap.data().phone
+          this.resumeName = docSnap.data().resumeObject.name
+          this.resumeURL = docSnap.data().resumeObject.resumeURL
         } else {
           console.log("No such document!");
         }
@@ -176,6 +196,15 @@ export default {
         }
       })    
     },
+    getFileDownloadURL (filename) {
+      getDownloadURL(ref(storage, 'resumes/' + this.user.uid + "/" + filename))
+        .then((url) => {
+          this.resumeName = filename
+          this.resumeURL = url
+          console.log(url)
+          this.updateResumePath();
+        })
+    },
     getResume() {
       const listRef = ref(storage, 'resumes/' + this.user.uid);
       listAll(listRef)
@@ -194,21 +223,34 @@ export default {
     },
     uploadTask() {
       this.getResume()
-      if (this.totalFiles.items.length >= 1) {
-        this.totalFiles.items.forEach((itemRef) => {
-          this.deleteFile(itemRef.name)
-        })
+      if (this.totalFiles.items.length > 0) {
+        this.deleteFile(this.totalFiles)
       }
+      console.log(this.file.name)
       this.uploadFile(this.file.name)
+      
+      // this.getFileDownloadURL(this.file.name)
     },
     uploadFile(file) {
       console.log(this.file)
       const resumesRef = ref(storage, 'resumes/' + this.user.uid + "/" + file);
       uploadBytes(resumesRef, this.file).then((snapshot) => {
         console.log('uploaded: ' + snapshot )
-      })
+      }).then((x) => this.getFileDownloadURL(this.file.name))
+        // .then((y) => this.updateResumePath())
     },
     deleteFile(file) {
+      file.items.forEach((itemRef) => {
+        const resumesRef = ref(storage, 'resumes/' + this.user.uid + "/" + itemRef.name);
+          // Delete the file
+        console.log(resumesRef)
+        deleteObject(resumesRef).then(() => {
+          // File deleted successfully
+          console.log("file deleted:" + itemRef.name)
+        }).catch((error) => {
+          // Uh-oh, an error occurred!
+        });
+      })
       console.log(this.prevFile)
       // if (this.prevfile != null || undefined) {
         const resumesRef = ref(storage, 'resumes/' + this.user.uid + "/" + file);
@@ -243,9 +285,9 @@ export default {
       }, {merge:true})
     },
     updateResumePath() {
-      const resumesRef = 'resumes/' + this.user.uid + "/" + this.file.name;
+      // const resumesRef = 'resumes/' + this.user.uid + "/" + this.file.name;
       updateDoc(doc(usersRef, this.user.uid), {
-        resumePath: resumesRef
+        resumeObject: {name: this.resumeName, resumeURL: this.resumeURL}
       }, {merge:true})
     }, 
     updateEmail() {

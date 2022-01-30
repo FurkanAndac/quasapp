@@ -2,22 +2,22 @@
   <div class="q-pa-md row justify-center">
     <div>
       <div>
-        <q-card v-for="(vac, index) in slicedEntries" :key="vac._id" 
-          @click="clickCard(vac), $forceUpdate()" clickable v-ripple class="my-box cursor-pointer q-hoverable q-ma-sm">
+        <q-card v-for="(vac, index) in slicedEntries" :key="index" 
+          @click="clickCard(vac[0], vac[1])" clickable v-ripple class="my-box cursor-pointer q-hoverable q-ma-sm">
           <span class="q-focus-helper"></span>
           <q-item class="corpCard">
 
             <!-- avatar per graduate entry -->
             <q-item-section avatar>
               <q-avatar style="height:75px;width:75px">
-                <img :src="slicedEntries[index].providerData[0].photoURL" >
+                <img :src="slicedEntries[index][1].providerData[0].photoURL" >
               </q-avatar>
             </q-item-section>
 
             <!-- Name, surname and description per graduate entry -->
             <q-item-section>
-              <q-item-label class="text-weight-bold">{{slicedEntries[index].displayname}}</q-item-label>
-              <q-item-label caption lines="5">{{slicedEntries[index].bio}}</q-item-label>
+              <q-item-label class="text-weight-bold">{{slicedEntries[index][1].displayname}}</q-item-label>
+              <q-item-label caption lines="5">{{slicedEntries[index][1].bio}}</q-item-label>
             </q-item-section>
 
             <!-- <q-item-section side top>
@@ -30,7 +30,7 @@
         </q-card>
       </div>
       <div>
-        <vacancy-card :card="card" :entryInfo="entryInfo" :badge="badge"></vacancy-card>
+        <vacancy-card :card="card" :entryInfo="entryInfo" :badge="badge" :gradUID="gradUID"></vacancy-card>
       </div>
     </div>
     <div class="info q-pa-xs">
@@ -68,6 +68,7 @@ export default {
       badge: "ok",
       entryInfo: null,
       entryList: [],
+      gradUID: "",
       slicedEntries: [],
       avatar: "",
 
@@ -121,7 +122,8 @@ export default {
           console.log(doc.id, " => ", doc.data());
         });
         console.log(this.mappedEntries)
-        this.demapper(this.mappedEntries)
+        // this.demapper(this.mappedEntries)
+        this.paginate(this.mappedEntries)
       })
     },
     // need to demap getGrads() results for v-for loop in HTML
@@ -144,21 +146,26 @@ export default {
     switchPage(currentPage) {
       this.card = false
       this.current = currentPage
-      this.paginate(this.entriesValue)
+      this.paginate(this.mappedEntries)
     },
     paginate(entries) {
       let from = (this.current * this.perPage) - this.perPage
       let to = this.current * this.perPage
-      let slicedEntries = entries.slice(from, to)
-      console.log(slicedEntries)
+      let tempEntries = Array.from(entries).slice(from, to)
+      let newEntries = new Map(tempEntries)
+      // let slicedEntries = entries.slice(from, to)
+      this.entriesKey = newEntries.keys()
+      console.log(tempEntries[0])
+      console.log([...newEntries.values()][0])
 
-      this.slicedEntries = slicedEntries
+      this.slicedEntries = tempEntries
     },
-    clickCard (param) {
-      // this.card = true
+    clickCard (uid, param) {
+      this.card = true
       this.entryInfo = param
+      this.gradUID = uid
       console.log(this.entryInfo)
-      console.log(this.card)
+      console.log(this.gradUID)
     },
     parser(data) {
       for (let i = 0; i < data.data.length; i += 1) {
