@@ -17,7 +17,7 @@ export default {
   props: ['entryList', 'current', 'total', 'perPage'],
   data () {
     return {
-      entries: this.entryList,
+      entryList: this.entryList,
       cur: this.current,
       tot: this.total,
       pPage: this.perPage
@@ -31,13 +31,14 @@ export default {
   },
   methods: {
     computeMaxpage: function () {
-      if(this.entries == null || undefined) {
+      if(this.entryList == null || undefined) {
         this.tot
         console.log(this.tot)
         return this.tot
       } else {
-        this.tot = Math.ceil(this.entries.length / this.pPage)
-        console.log(this.entries)
+        this.tot = Math.ceil(this.entryList[0].size / this.pPage)
+        console.log(this.entryList)
+        console.log(this.entryList[0].size)
         return this.tot
       }
     },

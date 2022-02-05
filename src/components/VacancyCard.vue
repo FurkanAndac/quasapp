@@ -36,10 +36,13 @@
           </br>
           <div class="text-subtitle3 text-black">
             email: {{entryInfo.email}}
-            <q-icon color="teal" size="30px" name="mail" @click="sendEmail" />
+            <q-icon right color="teal" size="30px" name="mail" @click="sendEmail" />
             </br>
             nummer: {{entryInfo.phone}}
-            <q-icon color="teal" size="30px" name="phone" @click="startCall" />
+            <q-icon right color="teal" size="30px" name="phone" @click="startCall" />
+            </br>
+            C.V.: {{entryInfo.resumeObject.name}}
+            <q-icon right color="teal" size="30px" name="picture_as_pdf" @click="getResume" />
             </br>
           </div>
         </q-card-section>
@@ -72,8 +75,10 @@ export default {
     },
     startCall() {
       window.location = "tel:" + this.entryInfo.phone
+    },
+    getResume() {
+      window.open(this.entryInfo.resumeObject.resumeURL)
     }
-
   },
 }
 </script>

@@ -14,7 +14,7 @@
           <q-tab v-show="!signedIn" name="interview" icon="duo" label="Interview" />
           <q-tab v-show="signedIn" name="profile" icon="account_circle" label="Profile"/>
           <login v-show="!signedIn" @signed-in="checkAuth"></login>
-          <q-btn v-show="signedIn" flat stack icon="logout" label="Logout" @click="logout()"/>
+          <q-btn v-show="signedIn" flat stack icon="logout" label="Logout" @click="logout(), $forceUpdate()"/>
         </q-tabs>
       <!-- </q-page-sticky> -->
       </q-header>
@@ -30,7 +30,7 @@
     >
       <q-tab-panel name="vacatures">
         <div class="text-h6"></div>
-        <index>
+        <index :signedInUserInfo="signedInUserInfo">
 
         </index>
       </q-tab-panel>
@@ -43,7 +43,7 @@
       </q-tab-panel>
 
       <q-tab-panel v-show="signedIn" name="profile">
-        <div class="text-h6">Profile</div>
+        <div class="text-h6"></div>
         <profile>
 
         </profile>

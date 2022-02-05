@@ -9,9 +9,16 @@
       <div style="text-transform: capitalize;">
         Hallo {{ this.displayname }}
       </div>
-      <q-avatar size="100px">
-        <img id="avatar" >
-      </q-avatar>
+      <div>
+        <q-avatar size="100px">
+          <img id="avatar" >
+        </q-avatar>
+      </div>
+      <q-select :readonly='readOnly' color="teal" filled v-model="model" :options="options" label="Opleiding">
+        <template v-slot:prepend>
+          <q-icon name="event" />
+        </template>
+      </q-select>
       <q-input :readonly='readOnly' class='q-pa-sm' filled v-model="bio" input-class="text-right" label-slot clearable>
         <template v-slot:label>
           <div class="row items-center all-pointer-events">
@@ -109,7 +116,7 @@ export default {
       phonenumber: "",
       resumeURL: "",
       resumeName: "",
-
+      education: "",
 
       avatar: "",
       file: null,
@@ -118,7 +125,10 @@ export default {
       readOnly: true,
       editLabel: 'Bewerk',
 
-
+      model: "Informatica",
+      options: [
+        "Informatica", "Technische informatica"
+      ]
     }
   },
   created() {
@@ -133,6 +143,7 @@ export default {
         this.getDisplayname()
         // lists all resumes
         this.getResume()
+        // this.getEducation()
         // gets current resumeURL for resume
         // this.getResumeInfo()
       } else {
@@ -156,6 +167,9 @@ export default {
     getDisplayname() {
       this.displayname = this.user.displayName
     },
+    // getEducation() {
+    //   this.model = this.user.education
+    // },
     gotoResumeURL() {
       // this.resumeName = this.user.resumeObject.name
       window.open(this.resumeURL)
@@ -165,6 +179,7 @@ export default {
       getDoc(docRef).then(docSnap => {
         if (docSnap.exists()) {
           console.log("Document data:", docSnap.data());
+          this.model = docSnap.data().education
           this.bio = docSnap.data().bio
           this.avatar = docSnap.data().providerData[0].photoURL
           // console.log(docSnap.data().providerData[0].photoURL)
@@ -188,11 +203,14 @@ export default {
             this.avatar = docSnap.data().providerData[0].photoURL + "?width=9999"
             var avatar = document.getElementById("avatar")
             avatar.src = this.avatar
+        } 
+        if (docSnap.exists() &&
+            docSnap.data().providerData[0].providerId === "google.com") {
+            this.avatar = docSnap.data().providerData[0].photoURL
+            var avatar = document.getElementById("avatar")
+            avatar.src = this.avatar
         } else {
-          this.avatar = docSnap.data().providerData[0].photoURL
-          var avatar = document.getElementById("avatar")
-          avatar.src = this.avatar
-          // console.log("No such document!");
+          console.log("No such document!");
         }
       })    
     },
@@ -264,6 +282,11 @@ export default {
         });
       // }
     },
+    updateEducation() {
+      updateDoc(doc(usersRef, this.user.uid), {
+        education: this.model
+      }, {merge:true})
+    },
     updateGender() {
       updateDoc(doc(usersRef, this.user.uid), {
         gender: this.gender
@@ -314,6 +337,7 @@ export default {
         this.readOnly = false;
         this.editLabel = 'Opslaan'
       } else {
+        this.updateEducation();
         this.updateBio();
         this.updatePlace();
         this.updateGender();

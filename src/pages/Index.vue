@@ -1,6 +1,11 @@
 <template>
   <div class="q-pa-md row justify-center">
     <div>
+      <q-select color="teal" filled v-model="model" :options="options" label="Filter">
+        <template v-slot:prepend>
+          <q-icon name="event" />
+        </template>
+      </q-select>
       <div>
         <q-card v-for="(vac, index) in slicedEntries" :key="index" 
           @click="clickCard(vac[0], vac[1])" clickable v-ripple class="my-box cursor-pointer q-hoverable q-ma-sm">
@@ -30,7 +35,7 @@
         </q-card>
       </div>
       <div>
-        <vacancy-card :card="card" :entryInfo="entryInfo" :badge="badge" :gradUID="gradUID"></vacancy-card>
+        <vacancy-card :signedInUserInfo="signedInUserInfo" :card="card" :entryInfo="entryInfo" :badge="badge" :gradUID="gradUID"></vacancy-card>
       </div>
     </div>
     <div class="info q-pa-xs">
@@ -50,7 +55,7 @@ import { api } from '../assets/apiRoutes.js'
 import { initializeApp } from "firebase/app"
 import { firebaseConfig } from '../sso/auth_google_signin'
 import { getFirestore, collection, doc, getDocs, query, where, limit, startAfter } from "firebase/firestore"; 
-
+import { ref } from '@vue/composition-api'
 
 const firebaseApp = initializeApp(firebaseConfig);
 
@@ -82,29 +87,51 @@ export default {
       entriesValue: [],
       entries: [],
 
+      model: "Informatica",
+      options: [
+        'Informatica', 'Technische informatica'
+      ]
     }
   },
   created () {
-    this.getGrads()
+    this.getGrads(this.model)
+    // console.log(this.signedInUserInfo)
+    // this.filterEntrylist(this.model)
+
   },
   mounted() {
-    fetch(api.users)
-      .then(response => response.json())
-      .then(data => (this.parser(data)));
-
+    // fetch(api.users)
+    //   .then(response => response.json())
+    //   .then(data => (this.parser(data)));
   },
   watch: {
     current: (newCurrent, oldCurrent) => {
       console.log("Page change from " + oldCurrent + " to " + newCurrent)
+    },
+    entryList: (newList, oldList) => {
+      console.log(oldList)
+      console.log(newList)
+    },
+    model: function (newVal, oldVal) {
+      console.log(oldVal + " ==> " + newVal)
+      console.log(this.entryList)
+      this.getGrads(newVal)
+    }
+  },
+  computed: {
+    model: function () {
+      console.log(this.model)
+      return this.model + "test"
     }
   },
   methods: {
-    getGrads() {
-      const first = query(collection(db, "users"), where("email", "!=", ""));
+    getGrads(filter) {
+      const first = query(collection(db, "users"), where("education", "==", filter));
 
       const documentSnapshots = getDocs(first);
       console.log(documentSnapshots)
-      
+      this.mappedEntries = new Map()
+      this.entryList = []
       documentSnapshots.then((x) => {
         x.forEach(doc => {
           this.mappedEntries.set(doc.id, doc.data())
@@ -122,10 +149,34 @@ export default {
           console.log(doc.id, " => ", doc.data());
         });
         console.log(this.mappedEntries)
+        this.entryList.push(this.mappedEntries)
+        console.log(this.entryList)
         // this.demapper(this.mappedEntries)
         this.paginate(this.mappedEntries)
       })
     },
+    // filterEntrylist(educationFilter) {
+    //   console.log(educationFilter)
+    //   console.log(this.entryList[0])
+    //   const filteredMappedEntries = new Map() 
+    //   this.entryList[0].forEach((element, key) => {
+    //     console.log(key)
+    //     if(element.education != null | undefined && element.education === educationFilter) {
+    //       filteredMappedEntries.set(key, element)
+    //       console.log(key, " => ", element)
+    //       console.log(filteredMappedEntries)
+    //       this.paginate(filteredMappedEntries)
+    //     } else {
+    //       // if (index > -1) {
+    //       //   this.entryList[0].splice(index, 1)
+    //       //   console.log(this.entryList)
+
+    //       // }
+    //     }
+    //     // this.paginate(this.entryList[0])
+        
+    //   });
+    // },
     // need to demap getGrads() results for v-for loop in HTML
     demapper(map) {
       const demappedEntries = []
@@ -146,6 +197,7 @@ export default {
     switchPage(currentPage) {
       this.card = false
       this.current = currentPage
+      console.log(this.mappedEntries)
       this.paginate(this.mappedEntries)
     },
     paginate(entries) {

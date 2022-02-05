@@ -42,7 +42,7 @@ import { getAuth, signInWithPopup, GoogleAuthProvider,
 import { initializeApp } from 'firebase/app';
 import { firebaseConfig } from '../sso/auth_google_signin'
 import Vue from 'vue'
-import { collection, doc, getFirestore, setDoc, updateDoc } from 'firebase/firestore';
+import { collection, doc, getFirestore, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 
 const app = initializeApp(firebaseConfig);
 
@@ -124,20 +124,31 @@ export default {
         this.token = token
         console.log(this.user)
         this.$emit('signed-in', user, token)
-        this.createProfile(user.uid)
+        const ref = doc(db, "users", user.uid)
+        getDoc(ref).then(docSnap => {
+          if (docSnap.exists()) {
+            console.log(docSnap.data())
+          } else {
+            this.createProfile(user.uid)
+          }
+        })
       });
 
     },
     createProfile(uid) {
-        updateDoc(doc(getFirestore(), "users", uid ), {
+        setDoc(doc(getFirestore(), "users", uid ), {
           displayname: this.user.displayName,
           email: this.user.email,
           // phone: this.user.phoneNumber,
           // avatar: this.user.photoURL,
           creationtime: this.user.metadata.creationTime,
-          providerData: this.user.providerData
+          providerData: this.user.providerData,
+          
         }, {merge:true})
-    }
+      // updateDoc(doc(getFirestore(), "appconfigs", uid), {
+      //   perpage: 2
+      // }, {merge:true})
+    }, 
   }
 }
 </script>
