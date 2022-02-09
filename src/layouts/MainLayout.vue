@@ -10,7 +10,7 @@
           v-model="panel"
           horizontal
           class="text-blue-grey-14" >
-          <q-tab name="vacatures" icon="work" label="Vacatures" />
+          <q-tab name="vacatures" icon="work" label="Graduates" />
           <q-tab v-show="!signedIn" name="interview" icon="duo" label="Interview" />
           <q-tab v-show="signedIn" name="profile" icon="account_circle" label="Profile"/>
           <login v-show="!signedIn" @signed-in="checkAuth"></login>
@@ -30,7 +30,7 @@
     >
       <q-tab-panel name="vacatures">
         <div class="text-h6"></div>
-        <index :signedInUserInfo="signedInUserInfo">
+        <index v-bind:signedInUserInfo="signedInUserInfo">
 
         </index>
       </q-tab-panel>
@@ -87,7 +87,7 @@ export default defineComponent({
       if(this.signedInAccessToken != "") {
         this.signedIn = true
       }
-      // console.log(this.signedInUserInfo)
+      console.log(this.signedInUserInfo)
       // console.log(this.signedInAccessToken)
       // console.log(this.signedIn)
     },

@@ -33,17 +33,16 @@ export default {
     computeMaxpage: function () {
       if(this.entryList == null || undefined) {
         this.tot
-        console.log(this.tot)
+        // console.log(this.tot)
         return this.tot
       } else {
         this.tot = Math.ceil(this.entryList[0].size / this.pPage)
-        console.log(this.entryList)
-        console.log(this.entryList[0].size)
+        // console.log(this.entryList)
+        // console.log(this.entryList[0].size)
         return this.tot
       }
     },
     clickPage(currentPage) {
-      // console.log(currentPage)
       this.$emit('click-page', currentPage)
     },
     checkList() {

@@ -35,7 +35,7 @@
         </q-card>
       </div>
       <div>
-        <vacancy-card :signedInUserInfo="signedInUserInfo" :card="card" :entryInfo="entryInfo" :badge="badge" :gradUID="gradUID"></vacancy-card>
+        <vacancy-card :roleSME="roleSME" :card="card" :entryInfo="entryInfo" :badge="badge" :gradUID="gradUID"></vacancy-card>
       </div>
     </div>
     <div class="info q-pa-xs">
@@ -54,8 +54,11 @@ import VacancyPagination from "src/components/VacancyPagination.vue"
 import { api } from '../assets/apiRoutes.js'
 import { initializeApp } from "firebase/app"
 import { firebaseConfig } from '../sso/auth_google_signin'
-import { getFirestore, collection, doc, getDocs, query, where, limit, startAfter } from "firebase/firestore"; 
+import { getFirestore, collection, doc, getDoc, getDocs, query, where, 
+         limit, startAfter } from "firebase/firestore"; 
 import { ref } from '@vue/composition-api'
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+
 
 const firebaseApp = initializeApp(firebaseConfig);
 
@@ -77,6 +80,10 @@ export default {
       slicedEntries: [],
       avatar: "",
 
+      user: {},
+      role: "",
+      roleSME: false,
+
       current: this.current || 1,
       total: 1,
       perPage: 2,
@@ -95,33 +102,39 @@ export default {
   },
   created () {
     this.getGrads(this.model)
-    // console.log(this.signedInUserInfo)
-    // this.filterEntrylist(this.model)
+
+    const auth = getAuth();
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        this.user = user;
+        console.log(this.user) 
+        this.getRole()
+      } else {
+        this.roleSME = false
+        this.user = {}
+      }
+    })
 
   },
   mounted() {
-    // fetch(api.users)
-    //   .then(response => response.json())
-    //   .then(data => (this.parser(data)));
   },
   watch: {
     current: (newCurrent, oldCurrent) => {
       console.log("Page change from " + oldCurrent + " to " + newCurrent)
     },
     entryList: (newList, oldList) => {
-      console.log(oldList)
-      console.log(newList)
+      // console.log(oldList)
+      // console.log(newList)
     },
     model: function (newVal, oldVal) {
       console.log(oldVal + " ==> " + newVal)
-      console.log(this.entryList)
       this.getGrads(newVal)
     }
   },
   computed: {
     model: function () {
       console.log(this.model)
-      return this.model + "test"
+      return this.model
     }
   },
   methods: {
@@ -135,48 +148,30 @@ export default {
       documentSnapshots.then((x) => {
         x.forEach(doc => {
           this.mappedEntries.set(doc.id, doc.data())
-          // if (doc.data().providerData[0].providerId === "facebook.com") {
-          //   // console.log("Document data:", docSnap.data());
-          //   this.avatar = doc.data().providerData[0].photoURL + "?width=9999"
-          //   var avatar = document.getElementById("avatar")
-          //   avatar.src = this.avatar
-          // } else {
-          //   this.avatar = doc.data().providerData[0].photoURL
-          //   var avatar = document.getElementById("avatar")
-          //   avatar.src = this.avatar
-          //   // console.log("No such document!");
-          // }
           console.log(doc.id, " => ", doc.data());
         });
-        console.log(this.mappedEntries)
+        // console.log(this.mappedEntries)
         this.entryList.push(this.mappedEntries)
-        console.log(this.entryList)
+        // console.log(this.entryList)
         // this.demapper(this.mappedEntries)
         this.paginate(this.mappedEntries)
       })
     },
-    // filterEntrylist(educationFilter) {
-    //   console.log(educationFilter)
-    //   console.log(this.entryList[0])
-    //   const filteredMappedEntries = new Map() 
-    //   this.entryList[0].forEach((element, key) => {
-    //     console.log(key)
-    //     if(element.education != null | undefined && element.education === educationFilter) {
-    //       filteredMappedEntries.set(key, element)
-    //       console.log(key, " => ", element)
-    //       console.log(filteredMappedEntries)
-    //       this.paginate(filteredMappedEntries)
-    //     } else {
-    //       // if (index > -1) {
-    //       //   this.entryList[0].splice(index, 1)
-    //       //   console.log(this.entryList)
+    getRole() {
+      const docRef = doc(db, "users", this.user.uid)
+      getDoc(docRef).then(docSnap => {
+        if (docSnap.exists()) {
+          console.log("Document data:", docSnap.data());
+          this.role = docSnap.data().role
+          if (this.role === "SME") {
+            this.roleSME = true
+          }
+        } else {
+          console.log("No such document!");
+        }
+      })
 
-    //       // }
-    //     }
-    //     // this.paginate(this.entryList[0])
-        
-    //   });
-    // },
+    },
     // need to demap getGrads() results for v-for loop in HTML
     demapper(map) {
       const demappedEntries = []
@@ -185,19 +180,12 @@ export default {
         demappedEntries.push(entry)
       });
       this.entriesValue = demappedEntries
-      // let from = (this.current * this.perPage) - this.perPage
-      // let to = this.current * this.perPage
-      // let slicedDemappedEntries = this.entriesValue.slice(from, to)
-      // this.entriesValue = slicedDemappedEntries
-      // this.paginate(this.entriesValue)
       this.paginate(this.entriesValue)
-      // console.log(slicedDemappedEntries)
-      console.log(this.entriesValue)
     },
     switchPage(currentPage) {
       this.card = false
       this.current = currentPage
-      console.log(this.mappedEntries)
+      // console.log(this.mappedEntries)
       this.paginate(this.mappedEntries)
     },
     paginate(entries) {
@@ -207,8 +195,8 @@ export default {
       let newEntries = new Map(tempEntries)
       // let slicedEntries = entries.slice(from, to)
       this.entriesKey = newEntries.keys()
-      console.log(tempEntries[0])
-      console.log([...newEntries.values()][0])
+      // console.log(tempEntries[0])
+      // console.log([...newEntries.values()][0])
 
       this.slicedEntries = tempEntries
     },
@@ -216,8 +204,8 @@ export default {
       this.card = true
       this.entryInfo = param
       this.gradUID = uid
-      console.log(this.entryInfo)
-      console.log(this.gradUID)
+      // console.log(this.entryInfo)
+      // console.log(this.gradUID)
     },
     parser(data) {
       for (let i = 0; i < data.data.length; i += 1) {

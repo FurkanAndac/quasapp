@@ -125,9 +125,9 @@ export default {
       readOnly: true,
       editLabel: 'Bewerk',
 
-      model: "Informatica",
+      model: "Ander",
       options: [
-        "Informatica", "Technische informatica"
+        "Informatica", "Technische informatica", "Ander"
       ]
     }
   },
@@ -136,7 +136,6 @@ export default {
     onAuthStateChanged(auth, (user) => {
       if (user) {
         this.user = user;
-        console.log(this.user) 
         this.email = user.email
         this.getProfile()
         this.loadPhotoURL()
@@ -179,7 +178,7 @@ export default {
       getDoc(docRef).then(docSnap => {
         if (docSnap.exists()) {
           console.log("Document data:", docSnap.data());
-          this.model = docSnap.data().education
+          this.model = docSnap.data().education !=  "" ? docSnap.data().education : this.model
           this.bio = docSnap.data().bio
           this.avatar = docSnap.data().providerData[0].photoURL
           // console.log(docSnap.data().providerData[0].photoURL)
@@ -219,7 +218,7 @@ export default {
         .then((url) => {
           this.resumeName = filename
           this.resumeURL = url
-          console.log(url)
+          // console.log(url)
           this.updateResumePath();
         })
     },
@@ -261,7 +260,7 @@ export default {
       file.items.forEach((itemRef) => {
         const resumesRef = ref(storage, 'resumes/' + this.user.uid + "/" + itemRef.name);
           // Delete the file
-        console.log(resumesRef)
+        // console.log(resumesRef)
         deleteObject(resumesRef).then(() => {
           // File deleted successfully
           console.log("file deleted:" + itemRef.name)
@@ -269,11 +268,11 @@ export default {
           // Uh-oh, an error occurred!
         });
       })
-      console.log(this.prevFile)
+      // console.log(this.prevFile)
       // if (this.prevfile != null || undefined) {
         const resumesRef = ref(storage, 'resumes/' + this.user.uid + "/" + file);
           // Delete the file
-        console.log(resumesRef)
+        // console.log(resumesRef)
         deleteObject(resumesRef).then(() => {
           // File deleted successfully
           console.log("file deleted")

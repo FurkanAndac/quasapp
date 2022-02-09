@@ -10,23 +10,32 @@
       v-close-popup
       style="width: 100%">
         <q-card-section>
-          <div class="text-h6">Login</div>
+          <div style="text-align:center; color:teal" class="text-h6">Login</div>
         </q-card-section>
 
-        <q-card-section class="q-pt-none">
+        <q-card-section style="text-align:center" class="q-pt-none">
           <!-- <div> -->
           <!-- <q-btn class="social-button" @click="socialGoogleLogin"> -->
             <img :src="pictureHoverGoogle" @mouseover="googleHover = true"
               @mouseleave="googleHover = false" @click="socialGoogleLogin" />   
           <!-- </q-btn> -->
         </q-card-section>
-        <q-card-section class="q-pt-none">
+        <q-card-section style="text-align:center" class="q-pt-none">
           <!-- <q-btn class="social-button" @click="socialFacebookLogin"> -->
             <img src="../assets/facebook-sign-in-button.png" style="width:191px"
               @click="socialFacebookLogin" />
           <!-- </q-btn> -->
 
         </q-card-section>
+        </br>
+        <div @click="gotoPrivacypolicy" style="text-align:center; color:teal">
+          Privacybeleid
+        </div>
+        </br>
+        <div @click="gotoFormSME" style="text-align:center; color:teal">
+          MKB'er? Klik hier!
+        </div>
+        </br>
 
         <!-- <q-card-actions align="right" class="bg-white text-teal">
           <q-btn flat label="OK" v-close-popup />
@@ -76,7 +85,6 @@ export default {
   },
   methods: {
     socialGoogleLogin() {
-      console.log(app)
       // Sign in using a redirect.
       const provider = new GoogleAuthProvider();
       provider.setCustomParameters({
@@ -97,7 +105,6 @@ export default {
         const user = result.user
         this.user = user
         this.token = token
-        console.log(this.user)
         this.$emit('signed-in', user, token)
         this.createProfile(user.uid)
       })
@@ -122,8 +129,8 @@ export default {
         // user.photoURL = user.photoURL + "?width=9999"
         this.user = user
         this.token = token
-        console.log(this.user)
         this.$emit('signed-in', user, token)
+        // this.$emit('user-role', this.user.role)
         const ref = doc(db, "users", user.uid)
         getDoc(ref).then(docSnap => {
           if (docSnap.exists()) {
@@ -137,18 +144,26 @@ export default {
     },
     createProfile(uid) {
         setDoc(doc(getFirestore(), "users", uid ), {
-          displayname: this.user.displayName,
+          // displayname: this.user.displayName,
           email: this.user.email,
           // phone: this.user.phoneNumber,
           // avatar: this.user.photoURL,
           creationtime: this.user.metadata.creationTime,
           providerData: this.user.providerData,
+          resumeObject: {name: "", resumeURL: ""},
+          role: "graduate"
           
         }, {merge:true})
       // updateDoc(doc(getFirestore(), "appconfigs", uid), {
       //   perpage: 2
       // }, {merge:true})
     }, 
+    gotoPrivacypolicy() {
+      window.open("https://www.privacypolicies.com/live/e596c1ae-ac27-4b1c-b660-251104515b53")
+    },
+    gotoFormSME() {
+      window.open("https://docs.google.com/forms/d/e/1FAIpQLSfeg6ZzLQESUAzyDFM0OAxVOCumbxv72azecp-iMxfU-WlL0A/viewform")
+    }
   }
 }
 </script>

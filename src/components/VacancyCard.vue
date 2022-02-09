@@ -1,5 +1,5 @@
 <template>
-  <div>My component
+  <div>
   <q-dialog v-model="card">
       <q-card class="my-card" >
 
@@ -34,7 +34,7 @@
             {{entryInfo.bio}}
           </div>
           </br>
-          <div class="text-subtitle3 text-black">
+          <div v-show="roleSME" class="text-subtitle3 text-black">
             email: {{entryInfo.email}}
             <q-icon right color="teal" size="30px" name="mail" @click="sendEmail" />
             </br>
@@ -44,6 +44,7 @@
             C.V.: {{entryInfo.resumeObject.name}}
             <q-icon right color="teal" size="30px" name="picture_as_pdf" @click="getResume" />
             </br>
+            {{roleSME}}
           </div>
         </q-card-section>
 
@@ -64,9 +65,11 @@
 <script>
 export default {
   name: 'VacancyCard',
-  props: ['card', 'entryInfo', 'badge', 'gradUID'],
+  props: ['roleSME', 'card', 'entryInfo', 'badge', 'gradUID'],
   data () {
     return {
+      roleSME: false,
+      // role: this.role
     }
   },
   methods: {
@@ -78,7 +81,13 @@ export default {
     },
     getResume() {
       window.open(this.entryInfo.resumeObject.resumeURL)
-    }
+    },
+    // getRole(role) {
+    //   if (role === "SME") {
+    //     this.roleSME = true
+    //     console.log(this.roleSME)
+    //   }
+    // }
   },
 }
 </script>
