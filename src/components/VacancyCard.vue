@@ -13,10 +13,9 @@
           <div class="row no-wrap items-center">
             <div class="col text-h6 ellipsis">
               
-              {{entryInfo.displayname}} {{gradUID}}
+              {{entryInfo.displayname}}
             </div>
             <div>
-              <q-badge class="badge" outline color="teal">{{badge}}</q-badge>
               <q-btn icon="close" flat round dense v-close-popup />
           </q-item-section>
 
@@ -26,10 +25,6 @@
         </q-card-section>
 
         <q-card-section class="q-pt-none">
-          <!-- <div class="text-subtitle1">
-            {{entryInfo.bio}}
-          </div>
-          </br> -->
           <div class="text-caption text-grey">
             {{entryInfo.bio}}
           </div>
@@ -82,12 +77,6 @@ export default {
     getResume() {
       window.open(this.entryInfo.resumeObject.resumeURL)
     },
-    // getRole(role) {
-    //   if (role === "SME") {
-    //     this.roleSME = true
-    //     console.log(this.roleSME)
-    //   }
-    // }
   },
 }
 </script>

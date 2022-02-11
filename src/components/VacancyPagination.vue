@@ -37,8 +37,9 @@ export default {
         return this.tot
       } else {
         this.tot = Math.ceil(this.entryList[0].size / this.pPage)
-        // console.log(this.entryList)
-        // console.log(this.entryList[0].size)
+        console.log(this.entryList)
+        console.log(this.entryList[0].size)
+        console.log(this.pPage)
         return this.tot
       }
     },

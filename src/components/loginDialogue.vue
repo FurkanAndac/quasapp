@@ -106,7 +106,13 @@ export default {
         this.user = user
         this.token = token
         this.$emit('signed-in', user, token)
-        this.createProfile(user.uid)
+        getDoc(ref).then(docSnap => {
+          if (docSnap.exists()) {
+            console.log(docSnap.data())
+          } else {
+            this.createProfile(user.uid)
+          }
+        })
       })
 
     },

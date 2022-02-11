@@ -39,11 +39,15 @@
       </div>
     </div>
     <div class="info q-pa-xs">
-      <vacancy-pagination @click-page="switchPage"
-        :entryList="entryList"
-        :current="current"
-        :total="total"
-        :perPage="perPage"></vacancy-pagination>
+      <div class="flex flex-center">
+        <vacancy-pagination @click-page="switchPage"
+          :entryList="entryList"
+          :current="current"
+          :total="total"
+          :perPage="perPage"></vacancy-pagination>
+
+        <q-select style="margin-left:25px" v-model="perPage" :options="pageOptions" />
+      </div>
     </div>
   </div>
 </template>
@@ -97,6 +101,9 @@ export default {
       model: "Informatica",
       options: [
         'Informatica', 'Technische informatica'
+      ],
+      pageOptions: [
+        2, 5, 10, 25
       ]
     }
   },
@@ -129,6 +136,10 @@ export default {
     model: function (newVal, oldVal) {
       console.log(oldVal + " ==> " + newVal)
       this.getGrads(newVal)
+    },
+    perPage: function (newVal, oldVal) {
+      this.perPage = newVal
+      this.paginate(this.mappedEntries)
     }
   },
   computed: {

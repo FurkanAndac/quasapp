@@ -1,5 +1,6 @@
 <template>
   <q-layout view="hHh lpR fFf">
+    
 
     <div class="custom-height-tabs">
       <q-header class="bg-teal-3" elevated reveal>
@@ -10,8 +11,9 @@
           v-model="panel"
           horizontal
           class="text-blue-grey-14" >
+          <img style="margin: 10px" src="../assets/logo.png" >
           <q-tab name="vacatures" icon="work" label="Graduates" />
-          <q-tab v-show="!signedIn" name="interview" icon="duo" label="Interview" />
+          <q-tab v-show="false" name="interview" icon="duo" label="Interview" />
           <q-tab v-show="signedIn" name="profile" icon="account_circle" label="Profile"/>
           <login v-show="!signedIn" @signed-in="checkAuth"></login>
           <q-btn v-show="signedIn" flat stack icon="logout" label="Logout" @click="logout(), $forceUpdate()"/>
@@ -35,7 +37,7 @@
         </index>
       </q-tab-panel>
 
-      <q-tab-panel v-show="!signedIn" name="interview">
+      <q-tab-panel v-show="false" name="interview">
         <div class="text-h6">Interview</div>
         <interview>
           
@@ -88,8 +90,6 @@ export default defineComponent({
         this.signedIn = true
       }
       console.log(this.signedInUserInfo)
-      // console.log(this.signedInAccessToken)
-      // console.log(this.signedIn)
     },
     logout() {
       const auth = getAuth();
