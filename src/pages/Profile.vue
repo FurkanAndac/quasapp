@@ -9,9 +9,16 @@
       <div style="text-transform: capitalize;">
         Hallo {{ this.displayname }}
       </div>
-      <q-avatar size="100px">
-        <img id="avatar" >
-      </q-avatar>
+      <div>
+        <q-avatar size="100px">
+          <img id="avatar" >
+        </q-avatar>
+      </div>
+      <q-select :readonly='readOnly' color="teal" filled v-model="model" :options="options" label="Opleiding">
+        <template v-slot:prepend>
+          <q-icon name="event" />
+        </template>
+      </q-select>
       <q-input :readonly='readOnly' class='q-pa-sm' filled v-model="bio" input-class="text-right" label-slot clearable>
         <template v-slot:label>
           <div class="row items-center all-pointer-events">
@@ -64,8 +71,8 @@
         </template>
 
       </q-file>
-      <div onclick="location.href='newurl.html';">
-        test
+      <div @click="gotoResumeURL">
+        {{resumeName}}
       </div>
 
       <div style="text-align:center">
@@ -83,7 +90,7 @@ import { initializeApp } from "firebase/app"
 import { getFirestore } from "firebase/firestore"
 import { firebaseConfig } from '../sso/auth_google_signin'
 import { collection, doc, setDoc, getDoc, updateDoc } from "firebase/firestore"; 
-import { getStorage, ref, uploadBytes, listAll, deleteObject } from "firebase/storage";
+import { getStorage, ref, uploadBytes, listAll, deleteObject, getDownloadURL } from "firebase/storage";
 
 
 const firebaseApp = initializeApp(firebaseConfig);
@@ -107,6 +114,9 @@ export default {
       gender: "",
       email: "",
       phonenumber: "",
+      resumeURL: "",
+      resumeName: "",
+      education: "",
 
       avatar: "",
       file: null,
@@ -115,7 +125,10 @@ export default {
       readOnly: true,
       editLabel: 'Bewerk',
 
-
+      model: "Ander",
+      options: [
+        "Informatica", "Technische informatica", "Ander"
+      ]
     }
   },
   created() {
@@ -123,30 +136,49 @@ export default {
     onAuthStateChanged(auth, (user) => {
       if (user) {
         this.user = user;
-        console.log(this.user) 
         this.email = user.email
         this.getProfile()
         this.loadPhotoURL()
         this.getDisplayname()
+        // lists all resumes
         this.getResume()
+        // this.getEducation()
+        // gets current resumeURL for resume
+        // this.getResumeInfo()
       } else {
         this.user = {}
       }
     })
   },
-  mounted() {
-  },
-  computed() {
-  },
+  // watch: {
+  //   resumeObject: (oldName, newName) => {
+  //     console.log("Resume changed from: " + oldName + " to " + newName)
+  //   }
+  // },
+  // mounted() {
+  // },
+  // computed: {
+  //   getResumeInfo() {
+  //     this.resumeObject = this.user.resumeObject
+  //   },
+  // },
   methods: {
     getDisplayname() {
       this.displayname = this.user.displayName
+    },
+    // getEducation() {
+    //   this.model = this.user.education
+    // },
+    gotoResumeURL() {
+      // this.resumeName = this.user.resumeObject.name
+      window.open(this.resumeURL)
     },
     getProfile() {
       const docRef = doc(db, "users", this.user.uid)
       getDoc(docRef).then(docSnap => {
         if (docSnap.exists()) {
           console.log("Document data:", docSnap.data());
+          this.model = docSnap.data().education !=  "" ? docSnap.data().education : this.model
           this.bio = docSnap.data().bio
           this.avatar = docSnap.data().providerData[0].photoURL
           // console.log(docSnap.data().providerData[0].photoURL)
@@ -154,6 +186,8 @@ export default {
           this.gender = docSnap.data().gender
           this.email = docSnap.data().email
           this.phonenumber = docSnap.data().phone
+          this.resumeName = docSnap.data().resumeObject.name
+          this.resumeURL = docSnap.data().resumeObject.resumeURL
         } else {
           console.log("No such document!");
         }
@@ -168,13 +202,25 @@ export default {
             this.avatar = docSnap.data().providerData[0].photoURL + "?width=9999"
             var avatar = document.getElementById("avatar")
             avatar.src = this.avatar
+        } 
+        if (docSnap.exists() &&
+            docSnap.data().providerData[0].providerId === "google.com") {
+            this.avatar = docSnap.data().providerData[0].photoURL
+            var avatar = document.getElementById("avatar")
+            avatar.src = this.avatar
         } else {
-          this.avatar = docSnap.data().providerData[0].photoURL
-          var avatar = document.getElementById("avatar")
-          avatar.src = this.avatar
-          // console.log("No such document!");
+          console.log("No such document!");
         }
       })    
+    },
+    getFileDownloadURL (filename) {
+      getDownloadURL(ref(storage, 'resumes/' + this.user.uid + "/" + filename))
+        .then((url) => {
+          this.resumeName = filename
+          this.resumeURL = url
+          // console.log(url)
+          this.updateResumePath();
+        })
     },
     getResume() {
       const listRef = ref(storage, 'resumes/' + this.user.uid);
@@ -194,26 +240,39 @@ export default {
     },
     uploadTask() {
       this.getResume()
-      if (this.totalFiles.items.length >= 1) {
-        this.totalFiles.items.forEach((itemRef) => {
-          this.deleteFile(itemRef.name)
-        })
+      if (this.totalFiles.items.length > 0) {
+        this.deleteFile(this.totalFiles)
       }
+      console.log(this.file.name)
       this.uploadFile(this.file.name)
+      
+      // this.getFileDownloadURL(this.file.name)
     },
     uploadFile(file) {
       console.log(this.file)
       const resumesRef = ref(storage, 'resumes/' + this.user.uid + "/" + file);
       uploadBytes(resumesRef, this.file).then((snapshot) => {
         console.log('uploaded: ' + snapshot )
-      })
+      }).then((x) => this.getFileDownloadURL(this.file.name))
+        // .then((y) => this.updateResumePath())
     },
     deleteFile(file) {
-      console.log(this.prevFile)
+      file.items.forEach((itemRef) => {
+        const resumesRef = ref(storage, 'resumes/' + this.user.uid + "/" + itemRef.name);
+          // Delete the file
+        // console.log(resumesRef)
+        deleteObject(resumesRef).then(() => {
+          // File deleted successfully
+          console.log("file deleted:" + itemRef.name)
+        }).catch((error) => {
+          // Uh-oh, an error occurred!
+        });
+      })
+      // console.log(this.prevFile)
       // if (this.prevfile != null || undefined) {
         const resumesRef = ref(storage, 'resumes/' + this.user.uid + "/" + file);
           // Delete the file
-        console.log(resumesRef)
+        // console.log(resumesRef)
         deleteObject(resumesRef).then(() => {
           // File deleted successfully
           console.log("file deleted")
@@ -221,6 +280,11 @@ export default {
           // Uh-oh, an error occurred!
         });
       // }
+    },
+    updateEducation() {
+      updateDoc(doc(usersRef, this.user.uid), {
+        education: this.model
+      }, {merge:true})
     },
     updateGender() {
       updateDoc(doc(usersRef, this.user.uid), {
@@ -243,24 +307,24 @@ export default {
       }, {merge:true})
     },
     updateResumePath() {
-      const resumesRef = 'resumes/' + this.user.uid + "/" + this.file.name;
+      // const resumesRef = 'resumes/' + this.user.uid + "/" + this.file.name;
       updateDoc(doc(usersRef, this.user.uid), {
-        resumePath: resumesRef
+        resumeObject: {name: this.resumeName, resumeURL: this.resumeURL}
       }, {merge:true})
     }, 
-    updateEmail() {
-      fetch(api.email, {
-        method: 'POST',
-        headers:{
-            'Accept': 'application/json',
-            'crossDomain':'true',
-            'Content-Type': 'application/json',
-            'Pragma': 'no-cache',
-            'Access-Control-Allow-Origin': '*'
-        },        
-        body: JSON.stringify({email: this.email}),
-      }).then(x => console.log(x))
-    },
+    // updateEmail() {
+    //   fetch(api.email, {
+    //     method: 'POST',
+    //     headers:{
+    //         'Accept': 'application/json',
+    //         'crossDomain':'true',
+    //         'Content-Type': 'application/json',
+    //         'Pragma': 'no-cache',
+    //         'Access-Control-Allow-Origin': '*'
+    //     },        
+    //     body: JSON.stringify({email: this.email}),
+    //   }).then(x => console.log(x))
+    // },
     updatePhonenumber() {
       updateDoc(doc(usersRef, this.user.uid), {
         phone: this.phonenumber
@@ -272,10 +336,11 @@ export default {
         this.readOnly = false;
         this.editLabel = 'Opslaan'
       } else {
+        this.updateEducation();
         this.updateBio();
         this.updatePlace();
         this.updateGender();
-        this.updateEmail();
+        // this.updateEmail();
         this.updatePhonenumber();
         // this.getResume();
         this.readOnly = true

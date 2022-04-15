@@ -1,5 +1,6 @@
 <template>
   <q-layout view="hHh lpR fFf">
+    
 
     <div class="custom-height-tabs">
       <q-header class="bg-teal-3" elevated reveal>
@@ -10,11 +11,12 @@
           v-model="panel"
           horizontal
           class="text-blue-grey-14" >
-          <q-tab name="vacatures" icon="work" label="Vacatures" />
-          <q-tab v-show="signedIn" name="interview" icon="duo" label="Interview" />
+          <img style="margin: 10px; width:70px" src="../assets/logo.png" >
+          <q-tab name="vacatures" icon="work" label="Graduates" />
+          <q-tab v-show="false" name="interview" icon="duo" label="Interview" />
           <q-tab v-show="signedIn" name="profile" icon="account_circle" label="Profile"/>
           <login v-show="!signedIn" @signed-in="checkAuth"></login>
-          <q-btn v-show="signedIn" flat stack icon="logout" label="Logout" @click="logout()"/>
+          <q-btn v-show="signedIn" flat stack icon="logout" label="Logout" @click="logout(), $forceUpdate()"/>
         </q-tabs>
       <!-- </q-page-sticky> -->
       </q-header>
@@ -30,12 +32,12 @@
     >
       <q-tab-panel name="vacatures">
         <div class="text-h6"></div>
-        <index>
+        <index v-bind:signedInUserInfo="signedInUserInfo">
 
         </index>
       </q-tab-panel>
 
-      <q-tab-panel v-show="signedIn" name="interview">
+      <q-tab-panel v-show="false" name="interview">
         <div class="text-h6">Interview</div>
         <interview>
           
@@ -43,7 +45,7 @@
       </q-tab-panel>
 
       <q-tab-panel v-show="signedIn" name="profile">
-        <div class="text-h6">Profile</div>
+        <div class="text-h6"></div>
         <profile>
 
         </profile>
@@ -87,9 +89,7 @@ export default defineComponent({
       if(this.signedInAccessToken != "") {
         this.signedIn = true
       }
-      // console.log(this.signedInUserInfo)
-      // console.log(this.signedInAccessToken)
-      // console.log(this.signedIn)
+      console.log(this.signedInUserInfo)
     },
     logout() {
       const auth = getAuth();

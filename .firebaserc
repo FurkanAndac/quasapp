@@ -1,5 +1,14 @@
 {
   "projects": {
     "default": "quasapp-95a6c"
+  },
+  "targets": {
+    "quasapp-95a6c": {
+      "hosting": {
+        "atgrads": [
+          "quasapp-95a6c"
+        ]
+      }
+    }
   }
 }
