@@ -124,9 +124,9 @@ module.exports = configure(function (ctx) {
       workboxPluginMode: 'GenerateSW', // 'GenerateSW' or 'InjectManifest'
       workboxOptions: {}, // only for GenerateSW
       manifest: {
-        name: 'Quasar App',
-        short_name: 'Quasar App',
-        description: 'A Quasar Framework app',
+        name: 'atGrads',
+        short_name: 'atGrads',
+        description: 'A SaaS platform for recent graduates',
         display: 'standalone',
         orientation: 'portrait',
         background_color: '#ffffff',

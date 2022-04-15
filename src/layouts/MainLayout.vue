@@ -11,7 +11,7 @@
           v-model="panel"
           horizontal
           class="text-blue-grey-14" >
-          <img style="margin: 10px" src="../assets/logo.png" >
+          <img style="margin: 10px; width:70px" src="../assets/logo.png" >
           <q-tab name="vacatures" icon="work" label="Graduates" />
           <q-tab v-show="false" name="interview" icon="duo" label="Interview" />
           <q-tab v-show="signedIn" name="profile" icon="account_circle" label="Profile"/>

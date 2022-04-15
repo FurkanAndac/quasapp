@@ -38,6 +38,19 @@
         <vacancy-card :roleSME="roleSME" :card="card" :entryInfo="entryInfo" :badge="badge" :gradUID="gradUID"></vacancy-card>
       </div>
     </div>
+    <div class="ad-container" 
+         style="min-width:200px;min-heigh:20px;"
+         >
+      <Adsense class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-9476431452677803"
+        data-ad-slot="6452619287"
+        data-ad-format="auto"
+        data-adtest="on"
+        data-full-width-responsive="true">
+      </Adsense>
+      
+    </div>
     <div class="info q-pa-xs">
       <div class="flex flex-center">
         <vacancy-pagination @click-page="switchPage"
@@ -62,7 +75,14 @@ import { getFirestore, collection, doc, getDoc, getDocs, query, where,
          limit, startAfter } from "firebase/firestore"; 
 import { ref } from '@vue/composition-api'
 import { getAuth, onAuthStateChanged } from "firebase/auth";
+import Vue from "vue";
+import InFeedAdsense from 'vue-google-adsense/dist/InFeedAdsense.min.js'
+import Ads from 'vue-google-adsense'
 
+Vue.use(InFeedAdsense)
+
+Vue.use(require('vue-script2'))
+Vue.use(Ads.Adsense)
 
 const firebaseApp = initializeApp(firebaseConfig);
 
@@ -72,7 +92,8 @@ const db = getFirestore()
 export default {
   components: {
     'vacancy-card': VacancyCard,
-    'vacancy-pagination': VacancyPagination
+    'vacancy-pagination': VacancyPagination,
+    // 'InFeedAdsense': InFeedAdsense
   },
   data () {
     return {
@@ -90,7 +111,7 @@ export default {
 
       current: this.current || 1,
       total: 1,
-      perPage: 2,
+      perPage: 5,
       currentpage: 1,
 
       mappedEntries: new Map(),
@@ -103,7 +124,7 @@ export default {
         'Informatica', 'Technische informatica'
       ],
       pageOptions: [
-        2, 5, 10, 25
+        5, 10, 25, 50
       ]
     }
   },

@@ -312,19 +312,19 @@ export default {
         resumeObject: {name: this.resumeName, resumeURL: this.resumeURL}
       }, {merge:true})
     }, 
-    updateEmail() {
-      fetch(api.email, {
-        method: 'POST',
-        headers:{
-            'Accept': 'application/json',
-            'crossDomain':'true',
-            'Content-Type': 'application/json',
-            'Pragma': 'no-cache',
-            'Access-Control-Allow-Origin': '*'
-        },        
-        body: JSON.stringify({email: this.email}),
-      }).then(x => console.log(x))
-    },
+    // updateEmail() {
+    //   fetch(api.email, {
+    //     method: 'POST',
+    //     headers:{
+    //         'Accept': 'application/json',
+    //         'crossDomain':'true',
+    //         'Content-Type': 'application/json',
+    //         'Pragma': 'no-cache',
+    //         'Access-Control-Allow-Origin': '*'
+    //     },        
+    //     body: JSON.stringify({email: this.email}),
+    //   }).then(x => console.log(x))
+    // },
     updatePhonenumber() {
       updateDoc(doc(usersRef, this.user.uid), {
         phone: this.phonenumber
@@ -340,7 +340,7 @@ export default {
         this.updateBio();
         this.updatePlace();
         this.updateGender();
-        this.updateEmail();
+        // this.updateEmail();
         this.updatePhonenumber();
         // this.getResume();
         this.readOnly = true

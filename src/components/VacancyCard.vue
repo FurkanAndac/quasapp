@@ -39,16 +39,15 @@
             C.V.: {{entryInfo.resumeObject.name}}
             <q-icon right color="teal" size="30px" name="picture_as_pdf" @click="getResume" />
             </br>
-            {{roleSME}}
           </div>
         </q-card-section>
 
         <q-separator />
 
 
-        <q-card-actions align="right">
+        <!-- <q-card-actions align="right">
           <q-btn align="left" v-close-popup flat color="teal" label="solliciteer nu" />
-        </q-card-actions>
+        </q-card-actions> -->
       </q-card>
     </q-dialog>
           </br>
