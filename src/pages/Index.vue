@@ -1,11 +1,18 @@
 <template>
   <div class="q-pa-md row justify-center">
     <div>
-      <q-select color="teal" filled v-model="model" :options="options" label="Filter">
+      <div>
+      <!-- <q-select color="teal" filled v-model="model" :options="options" label="Filter">
         <template v-slot:prepend>
           <q-icon name="event" />
         </template>
-      </q-select>
+      </q-select> -->
+
+      <filter-graduates @filtered-graduate="onFilterChild" 
+                          :model="model"
+                          :options="options">
+      </filter-graduates>
+      </div>
       <div>
         <q-card v-for="(vac, index) in slicedEntries" :key="index" 
           @click="clickCard(vac[0], vac[1])" clickable v-ripple class="my-box cursor-pointer q-hoverable q-ma-sm">
@@ -49,7 +56,6 @@
         data-adtest="on"
         data-full-width-responsive="true">
       </Adsense>
-      
     </div>
     <div class="info q-pa-xs">
       <div class="flex flex-center">
@@ -66,6 +72,7 @@
 </template>
 
 <script lang="js">
+import FilterGraduates from "src/components/FilterGraduates.vue"
 import VacancyCard from "src/components/VacancyCard.vue"
 import VacancyPagination from "src/components/VacancyPagination.vue"
 import { api } from '../assets/apiRoutes.js'
@@ -79,7 +86,7 @@ import Vue from "vue";
 import InFeedAdsense from 'vue-google-adsense/dist/InFeedAdsense.min.js'
 import Ads from 'vue-google-adsense'
 
-Vue.use(InFeedAdsense)
+// Vue.use(InFeedAdsense)
 
 Vue.use(require('vue-script2'))
 Vue.use(Ads.Adsense)
@@ -93,6 +100,7 @@ export default {
   components: {
     'vacancy-card': VacancyCard,
     'vacancy-pagination': VacancyPagination,
+    'filter-graduates': FilterGraduates
     // 'InFeedAdsense': InFeedAdsense
   },
   data () {
@@ -219,6 +227,10 @@ export default {
       this.current = currentPage
       // console.log(this.mappedEntries)
       this.paginate(this.mappedEntries)
+    },
+    onFilterChild(filter) {
+      console.log("test" + filter)
+      this.model = filter
     },
     paginate(entries) {
       let from = (this.current * this.perPage) - this.perPage
